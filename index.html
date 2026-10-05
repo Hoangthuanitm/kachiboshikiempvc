@@ -131,6 +131,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .who{display:flex;gap:6px 8px;flex-wrap:wrap;font-size:12.5px;flex:1 1 100%}
 .who span{padding:2px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--line)}
 .who span.miss{border-color:var(--ng);color:var(--ng);background:var(--ng-soft)}
+.edited{background:var(--wait-soft);color:var(--wait);border-radius:6px;padding:6px 10px;font-size:13.5px;font-weight:600}
 .okng{display:flex;gap:6px;flex:none}
 .okng button{width:58px;height:46px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;font-size:16px;cursor:pointer}
 .okng button[data-v="OK"][aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
@@ -224,7 +225,7 @@ select.asg.set{color:var(--ink);border-color:var(--accent);background:var(--acce
   <section id="tab-settings" hidden></section>
 </main>
 <div id="toast" hidden></div>
-<div class="ver">Phiên bản 05/10/2026 14:50</div>
+<div class="ver">Phiên bản 05/10/2026 15:25</div>
 
 <script>
 (function(){
@@ -249,7 +250,7 @@ const COLLECTION = "kachiboshivnpvc";
    nếu project chưa bật Cloud Translation API thì app chỉ hiện bản gốc. Đặt "" để tắt hẳn. */
 const TRANSLATE_API_KEY = firebaseConfig.apiKey;
 /* Mọi dữ liệu nằm trong MỘT collection; mỗi document có trường "type" và id có tiền tố theo loại. */
-const TYPES = {checks:"check", approvals:"appr", accounts:"acc", photos:"photo", config:"config", tr:"tr", assign:"assign", off:"off", daily:"daily", steps:"steps"};
+const TYPES = {checks:"check", approvals:"appr", accounts:"acc", photos:"photo", config:"config", tr:"tr", assign:"assign", off:"off", daily:"daily", steps:"steps", dappr:"dappr"};
 function makeDb(){
   const col = firebase.firestore().collection(COLLECTION);
   const wrap = (d, p) => ({id:d.id.slice(p.length), exists:d.exists, data:() => d.data()});
@@ -304,9 +305,9 @@ const RULES = [
 const itemsFor = sh => sh==="S" ? ITEMS.concat(PROC_ITEMS) : ITEMS;
 const DOW = {vi:["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"], ja:["日曜日","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日"]};
 const DEFAULT_TIMES = {S:{from:"06:00", due:"08:00"}, C:{from:"12:00", due:"13:30"}};
-const DEFAULT_MACHINES = [{id:"m1", name:"Máy in sấy PVC 1"}, {id:"m2", name:"Máy in sấy PVC 2"}, {id:"m3", name:"Máy in sấy PVC 3"}];
+const DEFAULT_MACHINES = [{id:"m1", name:"Máy in sấy PVC 1"}, {id:"m2", name:"Máy in sấy PVC 2"}, {id:"m3", name:"Máy in sấy PVC 3"}, {id:"m4", name:"Máy in PVC tự động", two:true}];
 /* Chỉ tổ trưởng duyệt phiếu. Admin phân công, quản lý tài khoản, xem tổng hợp và cài đặt. */
-const TABS = {admin:["approve","accounts","report","settings"], leader:["approve","assign","accounts","settings"], worker:["check"]};
+const TABS = {admin:["approve","accounts","report","settings"], leader:["approve","assign","accounts","report","settings"], worker:["check"]};
 const TAB_LABEL = {check:"Kiểm máy", approve:"Duyệt", assign:"Phân công", accounts:"Tài khoản", report:"Tổng hợp tháng", settings:"Cài đặt"};
 const ROLE_LABEL = {admin:"Admin", leader:"Tổ trưởng", worker:"Công nhân"};
 
@@ -426,6 +427,11 @@ const JA = {
 "Chọn":"選択",
 "Chọn người cho từng công đoạn. Ô chưa chọn thì chưa có ai phụ trách.":"工程ごとに担当者を選びます。未選択の欄は担当者なしです。",
 "Kết quả duyệt":"承認結果","Đang chờ tổ trưởng duyệt ({n})":"班長の承認待ち（{n}）","Không có phiếu nào đang chờ tổ trưởng duyệt.":"班長の承認待ちの記録はありません。",
+"Đã sang ngày mới nên không sửa được nội dung của ngày trước.":"日付が変わったため、前日の内容は修正できません。","Đã sửa {n} lần. Trước đó: {q}":"{n}回修正。修正前：{q}","nay: {q}":"現在：{q}",
+"Không có gì thay đổi so với báo cáo đã lưu.":"保存済みの報告から変更はありません。","Đã lưu bản sửa. Tổ trưởng sẽ duyệt lại.":"修正を保存しました。班長が再承認します。","Đã lưu báo cáo cuối ngày. Chờ tổ trưởng duyệt.":"終業報告を保存しました。班長の承認待ちです。",
+"Đã lưu lúc {t} bởi {n}. Chỉ sửa được trong hôm nay; mỗi lần sửa tổ trưởng phải duyệt lại.":"{t} に {n} が保存。修正は当日のみ可能で、修正のたびに班長の再承認が必要です。",
+"duyệt bởi":"承認者：","Duyệt bản sửa":"修正を承認","Duyệt báo cáo":"報告を承認","Báo cáo cuối ngày chờ duyệt ({n})":"承認待ちの終業報告（{n}）","Không có báo cáo cuối ngày nào chờ duyệt.":"承認待ちの終業報告はありません。","Báo cáo cuối ngày đã duyệt":"承認済みの終業報告",
+"Số lần sửa":"修正回数","Số lượng trước khi sửa (đôi)":"修正前の数量（双）",
 "Tháng báo cáo":"対象月","Tải lại":"再読み込み","Xuất Excel":"Excel出力",
 "Trình xem này không cho tải file. Hãy mở trang trên trình duyệt máy tính để xuất Excel.":"この画面ではファイルを保存できません。パソコンのブラウザで開いてExcel出力してください。",
 "Lần kiểm đã ghi":"点検記録数","Trễ giờ":"遅れ","Chưa duyệt xong":"未承認","Bảng theo ngày":"日別一覧","Đang tải dữ liệu tháng…":"月次データを読み込み中…",
@@ -467,11 +473,11 @@ const S = {
   today: ymd(new Date()),
   slot:{shift: new Date().getHours()<12 ? "S" : "C", machine:"m1"},
   form:{vals:{}, nums:{temp:"", temp2:"", speed:""}, product:"", note:"", photo:null, dirty:false},
-  products:[], defects:[], daily:new Map(), steps:new Map(), dform:{key:"", ta:"", doi:"", causes:[], other:"", dirty:false},
+  products:[], defects:[], daily:new Map(), dapprs:new Map(), steps:new Map(), dform:{key:"", ta:"", doi:"", causes:[], other:"", dirty:false},
   returning:null, returnNote:"", actions:{}, editAcc:null, busy:false,
   assign:new Map(), off:new Set(), week:"", qfWorker:"", qfStage:"", asgMachine:"",
   sform:{key:"", sampleQ:"", gloss:"", note:"", photo:null, dirty:false},
-  report:{month: ymd(new Date()).slice(0,7), checks:[], apprs:new Map(), daily:[], loaded:false}
+  report:{month: ymd(new Date()).slice(0,7), checks:[], apprs:new Map(), daily:[], dapprs:new Map(), loaded:false}
 };
 
 /* ---------- language ---------- */
@@ -551,7 +557,7 @@ function render(){
   $("#who").innerHTML = (S.me ? '<span class="role">'+esc(meName())+' · '+roleL(S.me.role)+'</span>' : '')
     +'<button class="btn sm" id="langBtn" aria-label="Đổi ngôn ngữ / 言語切替">'+(ja?"Tiếng Việt":"日本語")+'</button>'
     +(S.me ? '<button class="btn sm" id="logout">'+T("Đăng xuất")+'</button>' : '');
-  const n = S.me && S.me.role!=="worker" ? pendingList().length : 0;
+  const n = S.me && S.me.role!=="worker" ? pendingList().length+dailyPending().length : 0;
   $("#tabs").innerHTML = tabs.map(t => '<button role="tab" data-tab="'+t+'" aria-selected="'+(S.tab===t)+'">'+T(TAB_LABEL[t])+(t==="approve"&&n?'<span class="badge">'+n+'</span>':'')+'</button>').join("");
   $("#login").hidden = !!S.me;
   ["check","approve","assign","accounts","report","settings"].forEach(t => { $("#tab-"+t).hidden = !S.me || S.tab!==t; });
@@ -680,7 +686,7 @@ function stepsHtml(){ const st = curSteps(), ja = S.lang==="ja", mine = myStages
     return '<button type="button" class="stp'+(done?" done":"")+'" data-stepdo="'+i.k+'"'+(done||locked?" disabled":"")+'><span class="box">'+(done?"✓":"")+'</span><span class="stl"><b'+(ja?' style="font-family:var(--jp)"':'')+'>'+esc(ja?i.jp:i.vi)+'</b><small>'+T("Quy định")+' <span class="mono">'+i.at+'</span>'+(ja ? ' · '+esc(i.vi) : '')+'</small></span>'
       +'<span class="t">'+(done ? '<span class="mono">'+esc(done)+'</span>' : T("Bấm khi xong"))+'</span></button>'; }).join(""); }
 async function markStep(k){
-  if(S.busy) return;
+  if(S.busy || dayChanged()) return;
   const key = stepsKey(), cur = Object.assign({}, S.steps.get(key)); if(cur[k]) return;
   const d = new Date(), t = pad(d.getHours())+":"+pad(d.getMinutes()), m = curMachine();
   Object.assign(cur, {date:S.today, month:S.today.slice(0,7), machineId:m.id, machineName:m.name}); cur[k] = t; cur[k+"By"] = S.me.name;
@@ -753,7 +759,7 @@ function renderCheck(){
   const df = S.dform, dsaved = S.daily.get(df.key);
   const qrow = (label, a, b) => '<div class="qrow"><span>'+T(label)+'</span><label class="qty"><input type="text" inputmode="numeric" data-d="'+a+'" value="'+esc(df[a])+'" aria-label="'+T(label)+' ('+T("tá")+')"><span>'+T("tá")+'</span></label><label class="qty"><input type="text" inputmode="numeric" data-d="'+b+'" value="'+esc(df[b])+'" aria-label="'+T(label)+' ('+T("đôi")+')"><span>'+T("đôi")+'</span></label></div>';
   const causeList = S.defects.concat(df.causes.filter(x => !S.defects.includes(x)));
-  const daily = !mine.has("R") ? '' : '<div class="panel" id="dailyBox"><div><h2>'+T("Cuối ngày: hàng loại 2")+(multi()?' · '+esc(mName(mc.name||"")):'')+'</h2><div class="sub">'+(dsaved ? T("Đã lưu lúc {t} bởi {n}. Có thể sửa và lưu lại.",{t:fmtTime(dsaved.at), n:esc(dsaved.reporter)}) : T("Ghi số lượng và chọn nguyên nhân. Không có hàng loại 2 thì để trống và bấm lưu."))+'</div></div>'
+  const daily = !mine.has("R") ? '' : '<div class="panel" id="dailyBox"><div><h2>'+T("Cuối ngày: hàng loại 2")+(multi()?' · '+esc(mName(mc.name||"")):'')+'</h2><div class="sub">'+(dsaved ? stateChip(dState(dsaved, S.dapprs.get(df.key)))+' '+T("Đã lưu lúc {t} bởi {n}. Chỉ sửa được trong hôm nay; mỗi lần sửa tổ trưởng phải duyệt lại.",{t:fmtTime(dsaved.at), n:esc(dsaved.reporter)}) : T("Ghi số lượng và chọn nguyên nhân. Không có hàng loại 2 thì để trống và bấm lưu."))+'</div></div>'
     +qrow("Số lượng hàng loại 2","ta","doi")
     +'<div class="f"><span>'+T("Nguyên nhân lỗi")+'</span>'+(causeList.length ? '<div class="chips">'+causeList.map(x => '<button type="button" class="pchip" data-cause="'+esc(x)+'" aria-pressed="'+df.causes.includes(x)+'">'+esc(x)+'</button>').join("")+'</div>' : '')
       +'<input type="text" data-d="other" value="'+esc(df.other)+'" placeholder="'+T("Nguyên nhân khác (tự điền nếu không có trong danh sách)")+'" aria-label="'+T("Nguyên nhân khác (tự điền nếu không có trong danh sách)")+'"></div>'
@@ -820,7 +826,7 @@ $("#tab-check").addEventListener("change", async e => {
   catch(err){ toast(T("Không đọc được ảnh này. Hãy chụp lại.")); }
 });
 async function saveSample(){
-  if(S.busy) return;
+  if(S.busy || dayChanged()) return;
   const sf = S.sform, key = stepsKey(), cur = Object.assign({}, S.steps.get(key)), sid = S.today+"_S_"+S.slot.machine+"s", m = curMachine();
   if(!sf.sampleQ || !sf.gloss) return toast(T("Hãy chọn OK hoặc × cho hạt PVC và độ bóng của mẫu."));
   if(!sf.photo && !cur.hasSample) return toast(T("Hãy chụp ảnh hạt PVC của mẫu chạy thử."));
@@ -836,7 +842,7 @@ async function saveSample(){
   S.busy = false; if(!S.form.dirty && !S.dform.dirty) renderCheck();
 }
 async function saveCheck(){
-  if(S.busy) return;
+  if(S.busy || dayChanged()) return;
   const f = S.form, id = slotId(), prev = S.checks.get(id), now = new Date(), shift = S.slot.shift, mc0 = curMachine(), st = curSteps();
   if(shift==="S"){ const miss = STEPS.filter(i => !st[i.k] || (i.k==="sample" && (!st.sampleQ || !st.gloss))).map(i => S.lang==="ja" ? i.sj : i.short);
     if(miss.length) return toast(T("Chưa xong bước đầu ca: {l}. Chờ người phụ trách làm xong rồi lưu.",{l:miss.join(", ")})); }
@@ -856,25 +862,38 @@ async function saveCheck(){
     if(machNG && f.photo){ await S.db.doc("photos/"+id).set({data:f.photo, at:doc.at}); S.photos.set(id, f.photo); }
     await S.db.doc("checks/"+id).set(doc); S.form.dirty = false; if(document.activeElement) document.activeElement.blur();
     toast(anyNG ? T("Đã lưu. Báo ngay cho cơ điện và tổ trưởng.") : tm.timing==="late" ? T("Đã lưu. Lần kiểm này trễ {n} phút.",{n:tm.lateMin}) : T("Đã lưu kết quả kiểm."));
-  }catch(err){ toast(T(err && err.code==="permission-denied" ? "Firestore từ chối quyền ghi. Kiểm tra Security Rules." : "Chưa lưu được. Kiểm tra mạng rồi bấm lưu lại.")); const b=$("#saveBtn"); if(b) b.disabled=false; }
-  S.busy = false;
+  }catch(err){ toast(T(err && err.code==="permission-denied" ? "Firestore từ chối quyền ghi. Kiểm tra Security Rules." : "Chưa lưu được. Kiểm tra mạng rồi bấm lưu lại.")); }
+  S.busy = false; const sb = $("#saveBtn"); if(sb) sb.disabled = false; render();   /* vẽ lại để hiện trạng thái vừa lưu */
 }
+/* Báo cáo cuối ngày: mỗi lần lưu hoặc sửa đều phải được tổ trưởng duyệt lại; chỉ sửa được trong chính ngày đó */
+function dState(d, ap){ return ap && ap.dailyAt===d.at ? "approved" : "pending"; }
+function dailyPending(){ return [...S.daily.entries()].filter(([k,d]) => dState(d, S.dapprs.get(k))==="pending").sort((a,b) => a[1].at<b[1].at?1:-1); }
+function dayChanged(){ if(S.today===ymd(new Date())) return false; toast(T("Đã sang ngày mới nên không sửa được nội dung của ngày trước.")); S.form.dirty = S.dform.dirty = S.sform.dirty = false; S.today = ymd(new Date()); render(); return true; }
+function histHtml(d){ if(!d.hist || !d.hist.length) return ""; const h = d.hist[d.hist.length-1];
+  return '<div class="edited">'+T("Đã sửa {n} lần. Trước đó: {q}",{n:d.hist.length, q:qtyText(h.total)})+(h.cause ? ' · '+esc(h.cause) : '')+' <span class="sub">('+esc(h.by||"")+' '+fmtTime(h.at)+')</span> → '+T("nay: {q}",{q:b2Text(d)})+'</div>'; }
 async function saveDaily(){
   if(S.busy) return;
+  if(dayChanged()) return;
   const df = S.dform, n = k => has(String(df[k]).trim()) ? numOf(df[k]) : 0, ta = n("ta"), doi = n("doi");
   if([ta, doi].some(v => v===null || v<0 || v!==Math.floor(v))) return toast(T("Số lượng loại 2 phải là số nguyên."));
   const total = ta*12+doi, other = df.other.trim();
   if(total>0 && !df.causes.length && !other) return toast(T("Có hàng loại 2: hãy chọn hoặc ghi nguyên nhân lỗi."));
   const m = curMachine(), prods = [...new Set([S.today+"_S_"+m.id, S.today+"_C_"+m.id].map(k => (S.checks.get(k)||{}).product).filter(Boolean).join(", ").split(", ").filter(Boolean))].join(", ");
   const doc = Object.assign({}, {date:S.today, month:S.today.slice(0,7), machineId:m.id, machineName:m.name, b2Total:total, b2Ta:Math.floor(total/12), b2Doi:total%12, causes:df.causes.slice(), other:other, cause:df.causes.concat(other ? [other] : []).join("; "), product:prods, reporterId:S.me.id, reporter:S.me.name, at:new Date().toISOString()});
+  const old = S.daily.get(df.key);
+  if(old){ if(old.b2Total===doc.b2Total && (old.cause||"")===doc.cause){ S.dform.dirty = false; return toast(T("Không có gì thay đổi so với báo cáo đã lưu.")); }
+    doc.hist = (old.hist||[]).concat([{total:old.b2Total||0, cause:old.cause||"", by:old.reporter||"", at:old.at}]).slice(-10); }
   S.busy = true; $("#saveDaily").disabled = true;
-  try{ await S.db.doc("daily/"+df.key).set(doc); S.dform.dirty = false; if(document.activeElement) document.activeElement.blur(); toast(T("Đã lưu báo cáo cuối ngày.")); }
-  catch(err){ toast(T(err && err.code==="permission-denied" ? "Firestore từ chối quyền ghi. Kiểm tra Security Rules." : "Chưa lưu được. Kiểm tra mạng rồi bấm lưu lại.")); const b = $("#saveDaily"); if(b) b.disabled = false; }
-  S.busy = false;
+  try{ await S.db.doc("daily/"+df.key).set(doc); S.dform.dirty = false; if(document.activeElement) document.activeElement.blur(); toast(T(old ? "Đã lưu bản sửa. Tổ trưởng sẽ duyệt lại." : "Đã lưu báo cáo cuối ngày. Chờ tổ trưởng duyệt.")); }
+  catch(err){ toast(T(err && err.code==="permission-denied" ? "Firestore từ chối quyền ghi. Kiểm tra Security Rules." : "Chưa lưu được. Kiểm tra mạng rồi bấm lưu lại.")); }
+  S.busy = false; const sb = $("#saveDaily"); if(sb) sb.disabled = false; render();   /* vẽ lại để hiện trạng thái vừa lưu */
 }
-function dailyLine(d){ return '<div class="card'+(d.b2Total>0 ? " ng" : "")+'"><div class="head"><b><span class="mono">'+fmtDate(d.date)+'</span> · '+esc(mName(d.machineName))+'</b><span class="chip '+(d.b2Total>0?"ng":"ok")+'">'+T("Loại 2:")+' '+b2Text(d)+'</span></div>'
-  +'<div class="marks">'+(d.product ? '<span class="mark">'+esc(d.product)+'</span>' : '')+'</div>'
-  +(d.cause ? '<div>'+T("Nguyên nhân:")+' '+txt(d.cause)+'</div>' : '')+'<div class="sub">'+esc(d.reporter)+' · <span class="mono">'+fmtTime(d.at)+'</span></div></div>'; }
+function dailyLine(d, key, canApprove){ const st = dState(d, S.dapprs.get(key)), ap = S.dapprs.get(key);
+  return '<div class="card'+(d.b2Total>0 ? " ng" : "")+'"><div class="head"><b><span class="mono">'+fmtDate(d.date)+'</span> · '+esc(mName(d.machineName))+'</b><span class="row"><span class="chip '+(d.b2Total>0?"ng":"ok")+'">'+T("Loại 2:")+' '+b2Text(d)+'</span>'+stateChip(st)+'</span></div>'
+  +(d.product ? '<div class="marks"><span class="mark">'+esc(d.product)+'</span></div>' : '')
+  +(d.cause ? '<div>'+T("Nguyên nhân:")+' '+txt(d.cause)+'</div>' : '')+histHtml(d)
+  +'<div class="sub">'+esc(d.reporter)+' · <span class="mono">'+fmtTime(d.at)+'</span>'+(st==="approved" ? ' · '+T("duyệt bởi")+' '+esc(ap.approver)+' <span class="mono">'+fmtTime(ap.at)+'</span>' : '')+'</div>'
+  +(canApprove && st==="pending" ? '<div class="row"><button class="btn pri sm" data-dok="'+esc(key)+'">'+T(d.hist && d.hist.length ? "Duyệt bản sửa" : "Duyệt báo cáo")+'</button></div>' : '')+'</div>'; }
 
 /* ---------- approve tab ---------- */
 function renderApprove(){
@@ -903,9 +922,13 @@ function renderApprove(){
       h += '<tr><td class="d">'+fmtDate(c.date)+'</td><td>'+shiftL(c.shift)+'</td>'+(multi()?'<td>'+esc(mName(c.machineName))+'</td>':'')+'<td>'+resultChip(c)+'</td><td>'+timingChip(c)+'</td><td>'+esc(c.checker)+'</td><td>'+stateChip(stateOf(c,a))+'</td><td>'+esc(a.approver)+' <span class="mono sub">'+fmtDT(a.at)+'</span></td><td>'+txt(a.action||a.note||"")+'</td></tr>'; });
     h += '</table></div>'; }
   h += '</div>';
-  if(ro){ box.innerHTML = h; return; }
-  const dl = [...S.daily.values()].sort((a,b) => a.date<b.date ? 1 : a.date>b.date ? -1 : (a.machineName<b.machineName?-1:1)).slice(0,12);
-  h += '<div class="panel"><h2>'+T("Báo cáo cuối ngày gần đây")+'</h2>'+(dl.length ? dl.map(dailyLine).join("") : '<div class="notice">'+T("Chưa có báo cáo cuối ngày nào.")+'</div>');
+  if(ro){ const all = [...S.daily.entries()].sort((a,b) => a[1].date<b[1].date ? 1 : a[1].date>b[1].date ? -1 : 0).slice(0,20);
+    h += '<div class="panel"><h2>'+T("Báo cáo cuối ngày")+'</h2>'+(all.length ? '<div class="scroll"><table><tr><th>'+T("Ngày")+'</th><th>'+T("Máy")+'</th><th>'+T("Hàng loại 2")+'</th><th>'+T("Nguyên nhân")+'</th><th>'+T("Người báo cáo")+'</th><th>'+T("Số lần sửa")+'</th><th>'+T("Duyệt")+'</th></tr>'
+      +all.map(([k,d]) => '<tr><td class="d">'+fmtDate(d.date)+'</td><td>'+esc(mName(d.machineName))+'</td><td><b class="mono">'+b2Text(d)+'</b></td><td>'+txt(d.cause)+'</td><td>'+esc(d.reporter)+'</td><td class="d">'+((d.hist||[]).length)+'</td><td>'+stateChip(dState(d, S.dapprs.get(k)))+'</td></tr>').join("")+'</table></div>' : '<div class="notice">'+T("Chưa có báo cáo cuối ngày nào.")+'</div>')+'</div>';
+    box.innerHTML = h; return; }
+  const dp = dailyPending(), dd = [...S.daily.entries()].filter(([k,d]) => dState(d, S.dapprs.get(k))==="approved").sort((a,b) => a[1].date<b[1].date ? 1 : a[1].date>b[1].date ? -1 : (a[1].machineName<b[1].machineName?-1:1)).slice(0,12);
+  h += '<div class="panel"><h2>'+T("Báo cáo cuối ngày chờ duyệt ({n})",{n:dp.length})+'</h2>'+(dp.length ? dp.map(([k,d]) => dailyLine(d, k, true)).join("") : '<div class="notice">'+T("Không có báo cáo cuối ngày nào chờ duyệt.")+'</div>')+'</div>';
+  h += '<div class="panel"><h2>'+T("Báo cáo cuối ngày đã duyệt")+'</h2>'+(dd.length ? dd.map(([k,d]) => dailyLine(d, k, false)).join("") : '<div class="notice">'+T("Chưa có báo cáo cuối ngày nào.")+'</div>');
   box.innerHTML = h + '</div>';
 }
 async function writeAppr(id, status, note, action){
@@ -917,6 +940,10 @@ $("#tab-approve").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b || S.busy) return;
   if(b.dataset.photo){ b.disabled = true; await fetchPhoto(b.dataset.photo); return renderApprove(); }
   if(S.me.role!=="leader") return;
+  if(b.dataset.dok){ const k = b.dataset.dok, d = S.daily.get(k); if(!d) return; S.busy = true; b.disabled = true;
+    try{ await S.db.doc("dappr/"+k).set({date:d.date, month:d.month, status:"approved", dailyAt:d.at, total:d.b2Total||0, approverId:S.me.id, approver:S.me.name, at:new Date().toISOString()}); toast(T("Đã duyệt.")); }
+    catch(err){ toast(T("Chưa lưu được. Thử lại.")); }
+    S.busy = false; return renderApprove(); }
   const act = b.dataset.act, id = b.dataset.id;
   if(act==="ret"){ S.returning = id; S.returnNote = ""; return renderApprove(); }
   if(act==="retCancel"){ S.returning = null; return renderApprove(); }
@@ -1073,7 +1100,8 @@ function loadReport(){
   r.unsubs = [
     S.db.collection("checks").where("month","==",ym).limit(1000).onSnapshot(q => { if(r.sub!==ym) return; r.checks = q.docs.map(d => Object.assign({id:d.id}, d.data())).sort((x,y) => x.id<y.id?-1:1); r.gotC = true; done(); }, fail),
     S.db.collection("approvals").where("month","==",ym).limit(1000).onSnapshot(q => { if(r.sub!==ym) return; r.apprs = new Map(q.docs.map(d => [d.id, d.data()])); r.gotA = true; done(); }, fail),
-    S.db.collection("daily").where("month","==",ym).limit(1000).onSnapshot(q => { if(r.sub!==ym) return; r.daily = q.docs.map(d => Object.assign({id:d.id}, d.data())).sort((x,y) => x.id<y.id?-1:1); done(); }, fail)
+    S.db.collection("daily").where("month","==",ym).limit(1000).onSnapshot(q => { if(r.sub!==ym) return; r.daily = q.docs.map(d => Object.assign({id:d.id}, d.data())).sort((x,y) => x.id<y.id?-1:1); done(); }, fail),
+    S.db.collection("dappr").where("month","==",ym).limit(1000).onSnapshot(q => { if(r.sub!==ym) return; r.dapprs = new Map(q.docs.map(d => [d.id, d.data()])); done(); }, fail)
   ];
 }
 function b2All(list){ return qtyText(list.reduce((a,d) => a+(d.b2Total||0), 0)); }
@@ -1109,8 +1137,8 @@ function renderReport(){
   h += '</div>';
   h += '<div class="panel"><h2>'+T("Hàng loại 2 và báo cáo cuối ngày")+'</h2>';
   if(!r.daily.length) h += '<div class="notice">'+T("Tháng này chưa có báo cáo cuối ngày nào.")+'</div>';
-  else { h += '<div class="scroll"><table><tr><th>'+T("Ngày")+'</th><th>'+T("Máy")+'</th><th>'+T("Tên sản phẩm")+'</th><th>'+T("Hàng loại 2")+'</th><th>'+T("Nguyên nhân")+'</th><th>'+T("Người báo cáo")+'</th></tr>'
-    +r.daily.map(d => '<tr><td class="d">'+fmtDate(d.date).slice(0,5)+'</td><td>'+esc(mName(d.machineName))+'</td><td>'+esc(d.product||"")+'</td><td><b class="mono">'+b2Text(d)+'</b></td><td style="white-space:normal;min-width:180px">'+txt(d.cause)+'</td><td>'+esc(d.reporter)+'</td></tr>').join("")+'</table></div>'; }
+  else { h += '<div class="scroll"><table><tr><th>'+T("Ngày")+'</th><th>'+T("Máy")+'</th><th>'+T("Tên sản phẩm")+'</th><th>'+T("Hàng loại 2")+'</th><th>'+T("Nguyên nhân")+'</th><th>'+T("Người báo cáo")+'</th><th>'+T("Số lần sửa")+'</th><th>'+T("Duyệt")+'</th></tr>'
+    +r.daily.map(d => '<tr><td class="d">'+fmtDate(d.date).slice(0,5)+'</td><td>'+esc(mName(d.machineName))+'</td><td>'+esc(d.product||"")+'</td><td><b class="mono">'+b2Text(d)+'</b></td><td style="white-space:normal;min-width:180px">'+txt(d.cause)+'</td><td>'+esc(d.reporter)+'</td><td class="d">'+((d.hist||[]).length)+'</td><td>'+stateChip(dState(d, r.dapprs.get(d.id)))+'</td></tr>').join("")+'</table></div>'; }
   h += '</div>';
   const bad = r.checks.filter(c => !isPass(c));
   if(bad.length){ h += '<div class="panel"><h2>'+T("Các lần không đạt")+'</h2>';
@@ -1143,14 +1171,14 @@ async function exportXlsx(){
   people.forEach((p,k) => sum.push([k].concat(p)));
   sum.push([],[T("Theo máy"),T("Lần kiểm"),T("Đạt"),T("Không đạt")]);
   reportMachines().forEach(m => { const cs = r.checks.filter(c => c.machineId===m.id); sum.push([m.name, cs.length, cs.filter(isPass).length, cs.filter(c => !isPass(c)).length]); });
-  const drows = [["Ngày","Thứ","Máy","Tên sản phẩm","Loại 2 (tá)","Loại 2 (đôi lẻ)","Loại 2 quy ra đôi","Nguyên nhân","Người báo cáo","Thời gian báo cáo"].map(x => T(x))];
-  r.daily.forEach(d => drows.push([fmtDate(d.date), dowOf(d.date), mName(d.machineName), d.product||"", Math.floor((d.b2Total||0)/12), (d.b2Total||0)%12, d.b2Total||0, trPlain(d.cause), d.reporter, fmtDT(d.at)]));
+  const drows = [["Ngày","Thứ","Máy","Tên sản phẩm","Loại 2 (tá)","Loại 2 (đôi lẻ)","Loại 2 quy ra đôi","Nguyên nhân","Người báo cáo","Thời gian báo cáo","Số lần sửa","Số lượng trước khi sửa (đôi)","Trạng thái duyệt","Người duyệt","Thời gian duyệt"].map(x => T(x))];
+  r.daily.forEach(d => drows.push([fmtDate(d.date), dowOf(d.date), mName(d.machineName), d.product||"", Math.floor((d.b2Total||0)/12), (d.b2Total||0)%12, d.b2Total||0, trPlain(d.cause), d.reporter, fmtDT(d.at), (d.hist||[]).length, (d.hist||[]).map(x => x.total).join(" → "), stateText(dState(d, r.dapprs.get(d.id))), dState(d, r.dapprs.get(d.id))==="approved" ? r.dapprs.get(d.id).approver : "", dState(d, r.dapprs.get(d.id))==="approved" ? fmtDT(r.dapprs.get(d.id).at) : ""]));
   const cc = new Map(); r.daily.forEach(d => (d.causes||[]).concat(d.other ? [d.other] : []).forEach(x => cc.set(x, (cc.get(x)||0)+1)));
   if(cc.size){ sum.push([],[T("Nguyên nhân lỗi"),T("Số ngày xuất hiện")]); [...cc.entries()].sort((a,b) => b[1]-a[1]).forEach(e => sum.push([trPlain(e[0]), e[1]])); }
   const wb = XLSX.utils.book_new(), w1 = XLSX.utils.aoa_to_sheet(sum), w2 = XLSX.utils.aoa_to_sheet(rows);
   w1["!cols"] = [{wch:44},{wch:12},{wch:10},{wch:10},{wch:12}];
   w2["!cols"] = [12,11,8,18,16,14,10,20,10,11,12,16,11,18,18,18,18,18,16,20,12,20,16,36,14,14,20,18,40,30].map(w => ({wch:w}));
-  const w3 = XLSX.utils.aoa_to_sheet(drows); w3["!cols"] = [12,11,20,24,12,14,16,44,20,18].map(w => ({wch:w}));
+  const w3 = XLSX.utils.aoa_to_sheet(drows); w3["!cols"] = [12,11,20,24,12,14,16,44,20,18,12,24,16,20,18].map(w => ({wch:w}));
   XLSX.utils.book_append_sheet(wb, w1, T("Tổng hợp")); XLSX.utils.book_append_sheet(wb, w2, T("Chi tiết")); XLSX.utils.book_append_sheet(wb, w3, T("Loại 2"));
   try{ XLSX.writeFile(wb, "Kiem-tra-may-PVC_"+r.month+(S.lang==="ja"?"_JP":"")+".xlsx"); toast(T("Đã xuất file Excel.")); }
   catch(err){ toast(T("Chưa xuất được file. Thử lại sau ít phút.")); }
@@ -1190,7 +1218,7 @@ $("#tab-settings").addEventListener("click", async e => {
     try{ await S.db.doc(LISTS[kind].doc).set({list:list}); if(document.activeElement) document.activeElement.blur(); toast(T("Đã lưu cài đặt.")); }catch(err){ toast(T("Chưa lưu được cài đặt.")); }
     S.busy = false; return; }
   if(S.me.role!=="admin") return;
-  const cfg = {machines:S.cfg.machines.map(x => Object.assign({}, x)), times:{S:Object.assign({},S.cfg.times.S), C:Object.assign({},S.cfg.times.C)}};
+  const cfg = {autoAdded:true, machines:S.cfg.machines.map(x => Object.assign({}, x)), times:{S:Object.assign({},S.cfg.times.S), C:Object.assign({},S.cfg.times.C)}};
   if(b.id==="addMachine"){ const name = $("#newMachine").value.trim(); if(!name) return toast(T("Hãy nhập tên máy trước.")); cfg.machines.push({id:"m"+Date.now().toString(36), name:name}); }
   else if(b.dataset.del){ if(b.dataset.sure!=="1"){ b.dataset.sure="1"; b.textContent=T("Bấm lần nữa để xoá"); return; } cfg.machines = cfg.machines.filter(x => x.id!==b.dataset.del); }
   else if(b.dataset.savem){ const card = b.closest("[data-mc]"), g = k => card.querySelector('[data-f="'+k+'"]'), m = cfg.machines.find(x => x.id===b.dataset.savem);
@@ -1221,16 +1249,19 @@ async function start(){
   const fail = e => { if(e && e.code==="permission-denied"){ S.dbErr = "Firestore từ chối truy cập. Hãy mở quyền đọc/ghi cho collection này trong Security Rules rồi tải lại trang."; S.me = null; render(); } else toast(T("Mất kết nối dữ liệu. Tải lại trang.")); };
   db.collection("accounts").onSnapshot(q => { S.accounts = new Map(q.docs.map(d => [d.id, d.data()])); S.accLoaded = true; syncSession(); render(); if(S.me && S.tab==="report" && !S.report.loaded) loadReport(); }, fail);
   db.doc("config/main").onSnapshot(s => { const d = s.exists ? s.data() : {};
-    S.cfg = {machines: Array.isArray(d.machines) && d.machines.length ? d.machines : DEFAULT_MACHINES,
+    /* Cấu hình đã lưu từ trước chưa có máy tự động thì thêm vào một lần; admin xoá đi thì không tự thêm lại */
+    let saved = Array.isArray(d.machines) && d.machines.length ? d.machines : null;
+    if(saved && !d.autoAdded && !saved.some(m => m.id==="m4")) saved = saved.concat([DEFAULT_MACHINES[3]]);
+    S.cfg = {machines: saved || DEFAULT_MACHINES,
              times: {S:Object.assign({}, DEFAULT_TIMES.S, d.times && d.times.S), C:Object.assign({}, DEFAULT_TIMES.C, d.times && d.times.C)}};
     render(); }, fail);
   /* Theo dõi trực tiếp tháng này và tháng trước (để phiếu cuối tháng vẫn hiện ở tab Duyệt). */
   ["products","defects"].forEach(kind => db.doc(LISTS[kind].doc).onSnapshot(s => { const d = s.exists ? s.data() : {}; S[kind] = Array.isArray(d.list) ? d.list : []; render(); }, () => {}));
-  const cur = S.today.slice(0,7), live = {checks:{}, approvals:{}, daily:{}, steps:{}};
-  [cur, prevMonth(cur)].forEach(ym => { ["checks","approvals","daily","steps"].forEach(c => {
+  const cur = S.today.slice(0,7), live = {checks:{}, approvals:{}, daily:{}, steps:{}, dappr:{}};
+  [cur, prevMonth(cur)].forEach(ym => { ["checks","approvals","daily","steps","dappr"].forEach(c => {
     db.collection(c).where("month","==",ym).onSnapshot(q => { live[c][ym] = q.docs;
       const m = new Map(); Object.values(live[c]).forEach(ds => ds.forEach(d => m.set(d.id, d.data())));
-      if(c==="checks") S.checks = m; else if(c==="approvals") S.apprs = m; else if(c==="daily") S.daily = m; else { S.steps = m; paintSteps(); }
+      if(c==="checks") S.checks = m; else if(c==="approvals") S.apprs = m; else if(c==="daily") S.daily = m; else if(c==="dappr") S.dapprs = m; else { S.steps = m; paintSteps(); }
       render(); }, fail); }); });
   db.collection("tr").onSnapshot(q => { let n = 0; q.docs.forEach(d => { const o = d.data().out; if(o && S.tr.get(d.id)!==o){ S.tr.set(d.id, o); n++; } }); if(n) refresh(); }, () => {});
   S.week = mondayOf(S.today);
