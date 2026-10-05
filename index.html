@@ -198,6 +198,7 @@ select.asg{padding-inline:8px;text-overflow:ellipsis;height:44px;padding-block:0
 select.asg{color:var(--muted)}
 select.asg.set{color:var(--ink);border-color:var(--accent);background:var(--accent-soft);font-weight:600}
 .orig{display:block;font-size:12.5px;color:var(--muted)}
+.ver{text-align:center;color:var(--muted);font-size:12px;font-family:var(--mono);padding:0 16px 24px}
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);z-index:9}
 </style>
 
@@ -223,6 +224,7 @@ select.asg.set{color:var(--ink);border-color:var(--accent);background:var(--acce
   <section id="tab-settings" hidden></section>
 </main>
 <div id="toast" hidden></div>
+<div class="ver">Phiên bản 05/10/2026 14:50</div>
 
 <script>
 (function(){
@@ -304,7 +306,7 @@ const DOW = {vi:["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm",
 const DEFAULT_TIMES = {S:{from:"06:00", due:"08:00"}, C:{from:"12:00", due:"13:30"}};
 const DEFAULT_MACHINES = [{id:"m1", name:"Máy in sấy PVC 1"}, {id:"m2", name:"Máy in sấy PVC 2"}, {id:"m3", name:"Máy in sấy PVC 3"}];
 /* Chỉ tổ trưởng duyệt phiếu. Admin phân công, quản lý tài khoản, xem tổng hợp và cài đặt. */
-const TABS = {admin:["report","assign","accounts","settings"], leader:["approve","assign","accounts","settings"], worker:["check"]};
+const TABS = {admin:["approve","accounts","report","settings"], leader:["approve","assign","accounts","settings"], worker:["check"]};
 const TAB_LABEL = {check:"Kiểm máy", approve:"Duyệt", assign:"Phân công", accounts:"Tài khoản", report:"Tổng hợp tháng", settings:"Cài đặt"};
 const ROLE_LABEL = {admin:"Admin", leader:"Tổ trưởng", worker:"Công nhân"};
 
@@ -394,7 +396,7 @@ const JA = {
 "Loại 2:":"B品：","Kích thước:":"寸法：","Hạt PVC:":"ボツ：","Nguyên nhân:":"原因：","Báo cáo cuối ngày gần đây":"最近の終業報告","Chưa có báo cáo cuối ngày nào.":"終業報告はまだありません。",
 "Lịch phân công của tôi tuần này":"今週の私の担当","Tuần này bạn chưa được phân công buổi nào.":"今週の担当はまだありません。","Chưa phân công":"未割当",
 "Chọn người kiểm cho từng máy, từng buổi. Công nhân chỉ thấy đúng máy và buổi được chọn tên mình; ô chưa chọn thì không ai phải kiểm.":"機械・時間帯ごとに担当者を選びます。作業者には自分が選ばれた機械と時間帯だけが表示されます。未割当の欄は誰にも表示されません。",
-"Admin tạo và sửa mọi tài khoản. Việc phân công máy và ca làm ở tab Phân công.":"管理者はすべてのアカウントを作成・編集できます。機械と時間帯の割当は「担当表」タブで行います。","Bạn tạo tài khoản cho công nhân trong tổ. Việc phân công máy và ca làm ở tab Phân công.":"班の作業者のアカウントを作成します。機械と時間帯の割当は「担当表」タブで行います。",
+"Admin tạo và sửa mọi tài khoản. Việc phân công công đoạn do tổ trưởng làm.":"管理者はすべてのアカウントを作成・編集できます。工程の割当は班長が行います。","Bạn tạo tài khoản cho công nhân trong tổ. Việc phân công máy và ca làm ở tab Phân công.":"班の作業者のアカウントを作成します。機械と時間帯の割当は「担当表」タブで行います。",
 "Hàng loại 2":"B品","Hàng loại 2 và báo cáo cuối ngày":"B品と終業報告","Tháng này chưa có báo cáo cuối ngày nào.":"この月の終業報告はまだありません。","Nguyên nhân":"原因","Kích thước găng":"寸法","Hạt PVC":"ボツ","Người báo cáo":"報告者",
 "Mở máy":"乾燥炉を開ける","Vệ sinh":"掃除","Làm nóng khuôn":"手形を温める","Hạt PVC (mẫu loại 2)":"ボツ品質（サンプル）","Độ bóng hạt PVC":"ボツのつや","Hàng loại 2 (đôi)":"B品（双）",
 "Loại 2 (tá)":"B品（打）","Loại 2 (đôi lẻ)":"B品（端数・双）","Loại 2 quy ra đôi":"B品 合計（双）","Kích thước găng không đạt":"寸法不合格","Hạt PVC không đạt":"ボツ不合格","Đã kiểm hàng cả ngày đủ 5 việc":"終日検品5項目 実施","Thời gian báo cáo":"報告日時","Loại 2":"B品",
@@ -423,6 +425,7 @@ const JA = {
 "Điền nhanh cho máy đang chọn":"選択中の機械に一括入力","Công đoạn":"工程","Tất cả công đoạn":"すべての工程","Điền cả tuần":"週全体に入力",
 "Chọn":"選択",
 "Chọn người cho từng công đoạn. Ô chưa chọn thì chưa có ai phụ trách.":"工程ごとに担当者を選びます。未選択の欄は担当者なしです。",
+"Kết quả duyệt":"承認結果","Đang chờ tổ trưởng duyệt ({n})":"班長の承認待ち（{n}）","Không có phiếu nào đang chờ tổ trưởng duyệt.":"班長の承認待ちの記録はありません。",
 "Tháng báo cáo":"対象月","Tải lại":"再読み込み","Xuất Excel":"Excel出力",
 "Trình xem này không cho tải file. Hãy mở trang trên trình duyệt máy tính để xuất Excel.":"この画面ではファイルを保存できません。パソコンのブラウザで開いてExcel出力してください。",
 "Lần kiểm đã ghi":"点検記録数","Trễ giờ":"遅れ","Chưa duyệt xong":"未承認","Bảng theo ngày":"日別一覧","Đang tải dữ liệu tháng…":"月次データを読み込み中…",
@@ -628,9 +631,10 @@ function syncSession(){
 
 /* ---------- check tab ---------- */
 /* Công đoạn phân công riêng cho từng người: 4 bước đầu ca + kiểm máy sáng + kiểm máy chiều */
-const STAGES = [{c:"O", step:"open"}, {c:"V", step:"clean"}, {c:"W", step:"warm"}, {c:"M", step:"sample"}, {c:"S"}, {c:"C"}];
-function stageName(c){ const st = STAGES.find(x => x.c===c); if(st.step){ const i = STEPS.find(x => x.k===st.step); return S.lang==="ja" ? i.jp : i.vi; } return T(c==="S" ? "Kiểm máy sáng" : "Kiểm máy chiều"); }
-function stageShort(c){ const st = STAGES.find(x => x.c===c); if(st.step){ const i = STEPS.find(x => x.k===st.step); return S.lang==="ja" ? i.sj : i.short; } return T(c==="S" ? "Kiểm máy sáng" : "Kiểm máy chiều"); }
+const STAGES = [{c:"O", step:"open"}, {c:"V", step:"clean"}, {c:"W", step:"warm"}, {c:"M", step:"sample"}, {c:"S"}, {c:"C"}, {c:"R"}];
+const STAGE_LABEL = {S:"Kiểm máy sáng", C:"Kiểm máy chiều", R:"Báo cáo cuối ngày"};
+function stageName(c){ const st = STAGES.find(x => x.c===c); if(st.step){ const i = STEPS.find(x => x.k===st.step); return S.lang==="ja" ? i.jp : i.vi; } return T(STAGE_LABEL[c]); }
+function stageShort(c){ const st = STAGES.find(x => x.c===c); if(st.step){ const i = STEPS.find(x => x.k===st.step); return S.lang==="ja" ? i.sj : i.short; } return T(STAGE_LABEL[c]); }
 function myStages(date, mid){ const out = new Set(); STAGES.forEach(st => { const as = S.assign.get(date+"_"+st.c+"_"+mid); if(as && as.workerId===S.me.id) out.add(st.c); }); return out; }
 function myMachines(){ return isOff(S.today) ? [] : S.cfg.machines.filter(m => myStages(S.today, m.id).size); }
 function loadForm(){
@@ -749,14 +753,14 @@ function renderCheck(){
   const df = S.dform, dsaved = S.daily.get(df.key);
   const qrow = (label, a, b) => '<div class="qrow"><span>'+T(label)+'</span><label class="qty"><input type="text" inputmode="numeric" data-d="'+a+'" value="'+esc(df[a])+'" aria-label="'+T(label)+' ('+T("tá")+')"><span>'+T("tá")+'</span></label><label class="qty"><input type="text" inputmode="numeric" data-d="'+b+'" value="'+esc(df[b])+'" aria-label="'+T(label)+' ('+T("đôi")+')"><span>'+T("đôi")+'</span></label></div>';
   const causeList = S.defects.concat(df.causes.filter(x => !S.defects.includes(x)));
-  const daily = '<div class="panel" id="dailyBox"><div><h2>'+T("Cuối ngày: hàng loại 2")+(multi()?' · '+esc(mName(mc.name||"")):'')+'</h2><div class="sub">'+(dsaved ? T("Đã lưu lúc {t} bởi {n}. Có thể sửa và lưu lại.",{t:fmtTime(dsaved.at), n:esc(dsaved.reporter)}) : T("Ghi số lượng và chọn nguyên nhân. Không có hàng loại 2 thì để trống và bấm lưu."))+'</div></div>'
+  const daily = !mine.has("R") ? '' : '<div class="panel" id="dailyBox"><div><h2>'+T("Cuối ngày: hàng loại 2")+(multi()?' · '+esc(mName(mc.name||"")):'')+'</h2><div class="sub">'+(dsaved ? T("Đã lưu lúc {t} bởi {n}. Có thể sửa và lưu lại.",{t:fmtTime(dsaved.at), n:esc(dsaved.reporter)}) : T("Ghi số lượng và chọn nguyên nhân. Không có hàng loại 2 thì để trống và bấm lưu."))+'</div></div>'
     +qrow("Số lượng hàng loại 2","ta","doi")
     +'<div class="f"><span>'+T("Nguyên nhân lỗi")+'</span>'+(causeList.length ? '<div class="chips">'+causeList.map(x => '<button type="button" class="pchip" data-cause="'+esc(x)+'" aria-pressed="'+df.causes.includes(x)+'">'+esc(x)+'</button>').join("")+'</div>' : '')
       +'<input type="text" data-d="other" value="'+esc(df.other)+'" placeholder="'+T("Nguyên nhân khác (tự điền nếu không có trong danh sách)")+'" aria-label="'+T("Nguyên nhân khác (tự điền nếu không có trong danh sách)")+'"></div>'
     +'<div class="row"><button class="btn pri" id="saveDaily">'+T(dsaved?"Lưu lại báo cáo cuối ngày":"Lưu báo cáo cuối ngày")+'</button></div></div>';
   box.innerHTML =
     '<div class="panel"><div><h2>'+dowOf(S.today)+', <span class="mono">'+fmtDate(S.today)+'</span>'+(ms.length<2 ? ' · '+esc(mName(mc.name||"")) : '')+'</h2><div class="sub">'+T("Chỉ hiện những việc bạn được phân công hôm nay.")+'</div></div>'+machHtml+'</div>'
-   +stepsPanel+samplePanel+checkPanel+remindHtml()+daily+scheduleHtml();
+   +stepsPanel+samplePanel+checkPanel+([...mine].some(x => x!=="R") ? remindHtml() : '')+daily+scheduleHtml();
   if(mine.has("M") && stp.hasSample && !S.photos.has(sid)) fetchPhoto(sid).then(ok => { const p = $("#sphotoPrev"); if(ok && p && S.today+"_S_"+S.slot.machine+"s"===sid && !S.sform.photo) p.innerHTML = img(S.photos.get(sid), "Ảnh hạt PVC mẫu"); });
 }
 function compressImage(file){
@@ -875,14 +879,17 @@ function dailyLine(d){ return '<div class="card'+(d.b2Total>0 ? " ng" : "")+'"><
 /* ---------- approve tab ---------- */
 function renderApprove(){
   const box = $("#tab-approve");
+  const ro = S.me.role!=="leader";   /* chỉ tổ trưởng duyệt; admin chỉ xem kết quả */
   const pend = pendingList(), okN = pend.filter(([,c]) => isPass(c)).length;
-  let h = '<div class="panel"><div class="row between"><h2>'+T("Chờ duyệt ({n})",{n:pend.length})+'</h2>'+(okN>1 ? '<button class="btn sm" id="approveAll">'+T("Duyệt tất cả phiếu Đạt ({n})",{n:okN})+'</button>' : '')+'</div>';
+  let h = '<div class="panel"><div class="row between"><h2>'+T("Chờ duyệt ({n})",{n:pend.length})+'</h2>'+(okN>1 && !ro ? '<button class="btn sm" id="approveAll">'+T("Duyệt tất cả phiếu Đạt ({n})",{n:okN})+'</button>' : '')+'</div>';
   if(!pend.length) h += '<div class="notice">'+T("Không còn phiếu nào chờ duyệt. Phiếu công nhân lưu sẽ hiện ở đây ngay.")+'</div>';
-  pend.forEach(([id,c]) => { const bad = !isPass(c);
+  if(ro && pend.length){ h += '<div class="scroll"><table><tr><th>'+T("Ngày")+'</th><th>'+T("Ca")+'</th>'+(multi()?'<th>'+T("Máy")+'</th>':'')+'<th>'+T("Kết quả")+'</th><th>'+T("Giờ kiểm")+'</th><th>'+T("Người kiểm")+'</th><th>'+T("Duyệt")+'</th></tr>'
+    +pend.map(([id,c]) => '<tr><td class="d">'+fmtDate(c.date)+'</td><td>'+shiftL(c.shift)+'</td>'+(multi()?'<td>'+esc(mName(c.machineName))+'</td>':'')+'<td>'+resultChip(c)+'</td><td>'+timingChip(c)+'</td><td>'+esc(c.checker)+'</td><td>'+stateChip("pending")+'</td></tr>').join("")+'</table></div>'; }
+  if(!ro) pend.forEach(([id,c]) => { const bad = !isPass(c);
     h += '<div class="card'+(bad?" ng":"")+'"><div class="head">'+checkTitle(c)+'<span class="row">'+resultChip(c)+timingChip(c)+'</span></div><div class="marks">'+marks(c)+'</div>'
       +'<div class="sub">'+T("{name} kiểm lúc",{name:esc(c.checker)})+' <span class="mono">'+fmtTime(c.firstAt)+'</span> · '+T("quy định trước")+' <span class="mono">'+esc(c.due)+'</span>'+(S.apprs.get(id)?' · '+T("đã sửa sau lần duyệt trước"):'')+'</div>'
       +(c.sampleNote ? '<div>'+T("Ghi chú mẫu:")+' '+txt(c.sampleNote)+'</div>' : '')+(c.note ? '<div>'+T("Ghi chú:")+' '+txt(c.note)+'</div>' : '')+photoBlock(id,c)
-      +(S.returning===id
+      +(ro ? '<div class="row">'+stateChip("pending")+'</div>' : S.returning===id
         ? '<label class="f">'+T("Lý do trả lại")+'<input type="text" data-ret="1" value="'+esc(S.returnNote)+'" placeholder="'+T("Ví dụ: đo lại nhiệt độ")+'"></label><div class="row"><button class="btn warn sm" data-act="retSend" data-id="'+esc(id)+'">'+T("Gửi trả lại")+'</button><button class="btn sm" data-act="retCancel">'+T("Huỷ")+'</button></div>'
         : (bad ? '<label class="f">'+T("Biện pháp đã thực hiện (bắt buộc)")+'<textarea data-action="'+esc(id)+'" placeholder="'+T("Ví dụ: ngưng máy, báo cơ điện chỉnh nhiệt độ, kiểm lại hàng đã in sấy từ lần kiểm trước…")+'">'+esc(S.actions[id]||"")+'</textarea></label>' : '')
           +'<div class="row"><button class="btn pri sm" data-act="ok" data-id="'+esc(id)+'">'+T("Duyệt xác nhận")+'</button><button class="btn sm" data-act="ret" data-id="'+esc(id)+'">'+T("Trả lại")+'</button></div>')
@@ -896,6 +903,7 @@ function renderApprove(){
       h += '<tr><td class="d">'+fmtDate(c.date)+'</td><td>'+shiftL(c.shift)+'</td>'+(multi()?'<td>'+esc(mName(c.machineName))+'</td>':'')+'<td>'+resultChip(c)+'</td><td>'+timingChip(c)+'</td><td>'+esc(c.checker)+'</td><td>'+stateChip(stateOf(c,a))+'</td><td>'+esc(a.approver)+' <span class="mono sub">'+fmtDT(a.at)+'</span></td><td>'+txt(a.action||a.note||"")+'</td></tr>'; });
     h += '</table></div>'; }
   h += '</div>';
+  if(ro){ box.innerHTML = h; return; }
   const dl = [...S.daily.values()].sort((a,b) => a.date<b.date ? 1 : a.date>b.date ? -1 : (a.machineName<b.machineName?-1:1)).slice(0,12);
   h += '<div class="panel"><h2>'+T("Báo cáo cuối ngày gần đây")+'</h2>'+(dl.length ? dl.map(dailyLine).join("") : '<div class="notice">'+T("Chưa có báo cáo cuối ngày nào.")+'</div>');
   box.innerHTML = h + '</div>';
@@ -908,6 +916,7 @@ $("#tab-approve").addEventListener("input", e => { if(e.target.dataset.ret) S.re
 $("#tab-approve").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b || S.busy) return;
   if(b.dataset.photo){ b.disabled = true; await fetchPhoto(b.dataset.photo); return renderApprove(); }
+  if(S.me.role!=="leader") return;
   const act = b.dataset.act, id = b.dataset.id;
   if(act==="ret"){ S.returning = id; S.returnNote = ""; return renderApprove(); }
   if(act==="retCancel"){ S.returning = null; return renderApprove(); }
@@ -941,7 +950,7 @@ function renderAccounts(){
   const box = $("#tab-accounts"), admin = S.me.role==="admin", order = {admin:0, leader:1, worker:2};
   const list = [...S.accounts.entries()].filter(([,a]) => admin || a.role==="worker").sort((x,y) => order[x[1].role]-order[y[1].role] || x[1].name.localeCompare(y[1].name));
   let h = '<div class="panel"><div class="row between"><h2>'+T("Quản lý tài khoản")+'</h2>'+(S.editAcc ? '' : '<button class="btn pri sm" data-acc="new">'+T("Tạo tài khoản")+'</button>')+'</div>'
-    +'<div class="sub">'+T(admin ? "Admin tạo và sửa mọi tài khoản. Việc phân công máy và ca làm ở tab Phân công." : "Bạn tạo tài khoản cho công nhân trong tổ. Việc phân công máy và ca làm ở tab Phân công.")+'</div>';
+    +'<div class="sub">'+T(admin ? "Admin tạo và sửa mọi tài khoản. Việc phân công công đoạn do tổ trưởng làm." : "Bạn tạo tài khoản cho công nhân trong tổ. Việc phân công máy và ca làm ở tab Phân công.")+'</div>';
   if(S.editAcc==="__new") h += accForm("__new");
   if(!list.length && S.editAcc!=="__new") h += '<div class="notice">'+T("Chưa có tài khoản nào. Bấm Tạo tài khoản để thêm.")+'</div>';
   h += '<div class="list">';
