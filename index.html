@@ -49,7 +49,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .top-in,.wrap{max-width:900px;margin:0 auto;padding-inline:16px}
 .top-in{display:flex;flex-direction:column;gap:10px;padding-block:12px 0}
 .brand{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
-.brand h1{margin:0;font-size:17px;font-weight:700;line-height:1.25;text-wrap:balance}
+.brand h1{margin:0;font-size:16px;font-weight:700;line-height:1.25}
 .brand .jp{font-family:var(--jp);font-size:12px;color:var(--muted)}
 .who{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .role{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
@@ -82,7 +82,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .item{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line)}
 .item:first-child{border-top:0;padding-top:0}
 .item .lbl{min-width:0;flex:1}
-.item .lbl b{display:block;font-weight:600;font-size:14.5px}
+.item .lbl b{display:block;font-weight:600;font-size:14.5px;line-height:1.3}
 .item .lbl span{font-family:var(--jp);font-size:12px;color:var(--muted)}
 .item.pv{flex-wrap:wrap}
 .item.pv .lbl{flex:1 1 100%}
@@ -92,7 +92,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .rng{display:grid;grid-template-columns:minmax(96px,auto) 1fr auto 1fr;gap:8px;align-items:center;font-size:13px;color:var(--muted);font-weight:600}
 .rng input{text-align:center;font-family:var(--mono)}
 .sec{display:flex;flex-direction:column;gap:10px}
-.sec h3{margin:0;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.02em;text-transform:uppercase}
+.sec h3{margin:0;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.01em}
 .item .std{display:block;font-family:var(--font);color:var(--accent);font-weight:600;font-size:12.5px}
 .stepv{display:flex;gap:6px;align-items:center;flex:none}
 .stepv input[type=time]{width:132px;font-family:var(--mono)}
@@ -115,7 +115,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .stp{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:11px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;color:var(--ink)}
 .stp .box{width:26px;height:26px;border-radius:6px;border:2px solid var(--muted);flex:none;display:grid;place-items:center;font-weight:700;font-size:16px}
 .stp .stl{display:flex;flex-direction:column;min-width:0;flex:1}
-.stp .stl b{font-weight:600;font-size:14.5px}
+.stp .stl b{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stp .stl small{color:var(--muted);font-size:12px}
 .stp .t{flex:none;font-size:13px;font-weight:600;color:var(--accent)}
 .stp.done{background:var(--ok-soft);border-color:var(--ok);cursor:default;opacity:1}
@@ -170,7 +170,7 @@ textarea{min-height:70px;resize:vertical}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 .tile{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
-.tile b{display:block;font-family:var(--mono);font-size:24px;font-weight:500;font-variant-numeric:tabular-nums}
+.tile b{display:block;font-family:var(--mono);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.02em}
 .tile span{font-size:12.5px;color:var(--muted)}
 .scroll{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
@@ -188,7 +188,12 @@ tr.sun td{color:var(--muted)}
 .dayh{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .offt{display:flex;gap:6px;align-items:center;font-size:14px;font-weight:600;padding:4px 10px;border:1.5px solid var(--line);border-radius:999px;cursor:pointer}
 .offt input{width:18px;height:18px;font-size:16px}
-.dayg{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px}
+.dayg{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;align-items:end}
+.dayg .f{min-width:0}
+.lab{display:flex;gap:6px;justify-content:space-between;align-items:baseline;min-width:0}
+.lab span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.lab .mono{flex:none;font-weight:400;font-size:12px}
+select.asg{padding-inline:8px;text-overflow:ellipsis}
 select.asg{color:var(--muted)}
 select.asg.set{color:var(--ink);border-color:var(--accent);background:var(--accent-soft);font-weight:600}
 .orig{display:block;font-size:12.5px;color:var(--muted)}
@@ -267,19 +272,19 @@ document.addEventListener("focusout", e => { if(e.target.matches && e.target.mat
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ITEMS = [
-  {k:"temp", vi:"Kiểm tra nhiệt độ", short:"Nhiệt độ", jp:"温度", sj:"温度"},
-  {k:"speed", vi:"Kiểm tra tốc độ băng chuyền", short:"Tốc độ", jp:"コンベアのスピードチェック", sj:"スピード"}
+  {k:"temp", vi:"Nhiệt độ", short:"Nhiệt độ", jp:"温度", sj:"温度"},
+  {k:"speed", vi:"Tốc độ băng chuyền", short:"Tốc độ", jp:"コンベアのスピードチェック", sj:"スピード"}
 ];
 /* Quy trình QLCL in PVC (PVC商品の品質管理過程): các bước đầu ca sáng */
 const STEPS = [
   {k:"open",   at:"06:15", vi:"Mở máy", short:"Mở máy", jp:"乾燥炉を開ける", sj:"乾燥炉"},
-  {k:"clean",  at:"07:00", vi:"Vệ sinh máy in, khuôn in", short:"Vệ sinh", jp:"掃除（機械・プリント版）", sj:"掃除"},
+  {k:"clean",  at:"07:00", vi:"Vệ sinh máy, khuôn in", short:"Vệ sinh", jp:"掃除（機械・プリント版）", sj:"掃除"},
   {k:"warm",   at:"07:20", vi:"Làm nóng khuôn", short:"Làm nóng khuôn", jp:"加工する前に手形を温める", sj:"手形を温める"},
-  {k:"sample", at:"07:25", vi:"Chạy mẫu loại 2 (2 đôi)", short:"Chạy mẫu", jp:"２双サンプルを作る", sj:"サンプル"}
+  {k:"sample", at:"07:25", vi:"Chạy mẫu (2 đôi)", short:"Chạy mẫu", jp:"２双サンプルを作る", sj:"サンプル"}
 ];
 const PROC_ITEMS = [
-  {k:"sample", vi:"Chất lượng hạt PVC của mẫu", short:"Hạt PVC", jp:"ボツの品質チェック", sj:"ボツ品質"},
-  {k:"gloss",  vi:"Độ bóng hạt PVC đạt tiêu chuẩn", short:"Độ bóng", jp:"ボツのつやを確認", sj:"つや"}
+  {k:"sample", vi:"Hạt PVC của mẫu", short:"Hạt PVC", jp:"ボツの品質チェック", sj:"ボツ品質"},
+  {k:"gloss",  vi:"Độ bóng hạt PVC", short:"Độ bóng", jp:"ボツのつやを確認", sj:"つや"}
 ];
 /* Nhắc nhở khi kiểm hàng cả ngày (本生産しながら検品する): chỉ để đọc, không cần đánh dấu */
 const INSP = [
@@ -415,6 +420,7 @@ const JA = {
 "Ghi chú mẫu:":"サンプル備考：","Mỗi công đoạn chọn một người phụ trách. Công nhân chỉ thấy đúng công đoạn có tên mình; ô chưa chọn thì không ai thấy.":"工程ごとに担当者を１人選びます。作業者には自分の名前がある工程だけが表示されます。未割当の欄は誰にも表示されません。",
 "Điền nhanh cho máy đang chọn":"選択中の機械に一括入力","Công đoạn":"工程","Tất cả công đoạn":"すべての工程","Điền cả tuần":"週全体に入力",
 "Chưa chọn":"未選択",
+"Chọn người cho từng công đoạn. Ô chưa chọn thì chưa có ai phụ trách.":"工程ごとに担当者を選びます。未選択の欄は担当者なしです。",
 "Tháng báo cáo":"対象月","Tải lại":"再読み込み","Xuất Excel":"Excel出力",
 "Trình xem này không cho tải file. Hãy mở trang trên trình duyệt máy tính để xuất Excel.":"この画面ではファイルを保存できません。パソコンのブラウザで開いてExcel出力してください。",
 "Lần kiểm đã ghi":"点検記録数","Trễ giờ":"遅れ","Chưa duyệt xong":"未承認","Bảng theo ngày":"日別一覧","Đang tải dữ liệu tháng…":"月次データを読み込み中…",
@@ -536,7 +542,7 @@ function render(){
   const tabs = S.me ? TABS[S.me.role] : [];
   if(S.me && !tabs.includes(S.tab)) S.tab = tabs[0];
   const ja = S.lang==="ja";
-  $("#brand").innerHTML = '<h1'+(ja?' style="font-family:var(--jp)"':'')+'>'+(ja?"PVC加工機チェック・PVC商品の品質管理過程":"Kiểm tra máy in sấy PVC và quy trình QLCL in PVC")+'</h1><div class="jp">'+(ja?"Kiểm tra máy in sấy PVC và quy trình QLCL in PVC":"PVC加工機のチェック項目・PVC商品の品質管理過程")+'</div>';
+  $("#brand").innerHTML = '<h1'+(ja?' style="font-family:var(--jp)"':'')+'>'+(ja?"PVC加工機チェック・品質管理":"Kiểm tra máy và QLCL in PVC")+'</h1><div class="jp">'+(ja?"Kiểm tra máy và QLCL in PVC":"PVC加工機チェック・品質管理")+'</div>';
   $("#who").innerHTML = (S.me ? '<span class="role">'+esc(meName())+' · '+roleL(S.me.role)+'</span>' : '')
     +'<button class="btn sm" id="langBtn" aria-label="Đổi ngôn ngữ / 言語切替">'+(ja?"Tiếng Việt":"日本語")+'</button>'
     +(S.me ? '<button class="btn sm" id="logout">'+T("Đăng xuất")+'</button>' : '');
@@ -622,6 +628,7 @@ function syncSession(){
 /* Công đoạn phân công riêng cho từng người: 4 bước đầu ca + kiểm máy sáng + kiểm máy chiều */
 const STAGES = [{c:"O", step:"open"}, {c:"V", step:"clean"}, {c:"W", step:"warm"}, {c:"M", step:"sample"}, {c:"S"}, {c:"C"}];
 function stageName(c){ const st = STAGES.find(x => x.c===c); if(st.step){ const i = STEPS.find(x => x.k===st.step); return S.lang==="ja" ? i.jp : i.vi; } return T(c==="S" ? "Kiểm máy sáng" : "Kiểm máy chiều"); }
+function stageShort(c){ const st = STAGES.find(x => x.c===c); if(st.step){ const i = STEPS.find(x => x.k===st.step); return S.lang==="ja" ? i.sj : i.short; } return T(c==="S" ? "Kiểm máy sáng" : "Kiểm máy chiều"); }
 function myStages(date, mid){ const out = new Set(); STAGES.forEach(st => { const as = S.assign.get(date+"_"+st.c+"_"+mid); if(as && as.workerId===S.me.id) out.add(st.c); }); return out; }
 function myMachines(){ return isOff(S.today) ? [] : S.cfg.machines.filter(m => myStages(S.today, m.id).size); }
 function loadForm(){
@@ -650,7 +657,7 @@ function loadDaily(){ const key = stepsKey(), d = S.daily.get(key), n = d ? d.b2
   S.dform = {key:key, ta:Math.floor(n/12) ? String(Math.floor(n/12)) : "", doi:n%12 ? String(n%12) : "", causes:d && Array.isArray(d.causes) ? d.causes.slice() : [], other:d ? d.other||"" : "", dirty:false}; }
 function mySchedule(){ const out = [];
   for(let i=0;i<7;i++){ const date = addDays(mondayOf(S.today), i); if(date<S.today || isOff(date)) continue; const items = [];
-    S.cfg.machines.forEach(m => { const st = myStages(date, m.id); if(st.size) items.push((multi() ? mName(m.name)+": " : "")+STAGES.filter(x => st.has(x.c)).map(x => stageName(x.c)).join(", ")); });
+    S.cfg.machines.forEach(m => { const st = myStages(date, m.id); if(st.size) items.push((multi() ? mName(m.name)+": " : "")+STAGES.filter(x => st.has(x.c)).map(x => stageShort(x.c)).join(", ")); });
     if(items.length) out.push([date, items]); }
   return out; }
 function scheduleHtml(){ const sc = mySchedule();
@@ -988,12 +995,12 @@ function renderAssign(){
   if(!ms.some(m => m.id===S.asgMachine)) S.asgMachine = ms[0].id;
   const mid = S.asgMachine;
   let h = '<div class="panel"><div class="row between"><h2>'+T("Phân công theo tuần")+'</h2><div class="row"><button class="btn sm" data-wk="-7" aria-label="'+T("Tuần trước")+'">◀</button><span class="mono">'+fmtDate(days[0]).slice(0,5)+' – '+fmtDate(days[5])+'</span><button class="btn sm" data-wk="7" aria-label="'+T("Tuần sau")+'">▶</button></div></div>'
-    +'<div class="sub">'+T("Mỗi công đoạn chọn một người phụ trách. Công nhân chỉ thấy đúng công đoạn có tên mình; ô chưa chọn thì không ai thấy.")+' '+T("Chủ nhật không cần phân công. Thứ bảy nào nghỉ thì đánh dấu “Ngày nghỉ” để không phải kiểm.")+'</div>';
+    +'<div class="sub">'+T("Chọn người cho từng công đoạn. Ô chưa chọn thì chưa có ai phụ trách.")+'</div>';
   if(!ws.length){ box.innerHTML = h+'<div class="notice">'+T("Chưa có tài khoản công nhân nào. Tạo ở tab Tài khoản trước.")+'</div></div>'; return; }
   const opts = sel => ws.map(([id,a]) => '<option value="'+esc(id)+'"'+(id===sel?" selected":"")+'>'+esc(a.name)+'</option>').join("");
   if(ms.length>1) h += '<div class="seg" id="asgMachines">'+ms.map(m => '<button type="button" data-am="'+esc(m.id)+'" aria-pressed="'+(m.id===mid)+'">'+esc(mName(m.name))+'</button>').join("")+'</div>';
   h += '<div class="card"><b>'+T("Điền nhanh cho máy đang chọn")+'</b><div class="row"><select id="qfWorker" class="grow" aria-label="'+T("Chọn công nhân")+'"><option value="">— '+T("Chọn công nhân")+' —</option>'+opts(S.qfWorker)+'</select>'
-    +'<select id="qfStage" class="grow" aria-label="'+T("Công đoạn")+'"><option value="">'+T("Tất cả công đoạn")+'</option>'+STAGES.map(x => '<option value="'+x.c+'"'+(x.c===S.qfStage?" selected":"")+'>'+esc(stageName(x.c))+'</option>').join("")+'</select></div>'
+    +'<select id="qfStage" class="grow" aria-label="'+T("Công đoạn")+'"><option value="">'+T("Tất cả công đoạn")+'</option>'+STAGES.map(x => '<option value="'+x.c+'"'+(x.c===S.qfStage?" selected":"")+'>'+esc(stageShort(x.c))+'</option>').join("")+'</select></div>'
     +'<div class="row"><button class="btn sm" data-qf="fill">'+T("Điền cả tuần")+'</button><button class="btn sm warn" data-qf="clear">'+T("Xoá phân công tuần này")+'</button></div></div>';
   h += '<div class="list">';
   days.forEach(date => { const past = date<S.today, sat = isSaturday(date), off = S.off.has(date);
@@ -1001,7 +1008,7 @@ function renderAssign(){
       +(sat ? '<label class="offt"><input type="checkbox" data-off="'+date+'"'+(off?" checked":"")+(past?" disabled":"")+'>'+T("Ngày nghỉ")+'</label>' : '')+'</div><div class="dayg">';
     if(off) h += '<div class="notice" style="grid-column:1/-1">'+T("Ngày nghỉ – không cần kiểm máy.")+'</div>';
     else STAGES.forEach(x => { const key = date+"_"+x.c+"_"+mid, as = S.assign.get(key), sel = as ? as.workerId : "", stp = x.step ? STEPS.find(y => y.k===x.step) : null;
-      h += '<label class="f">'+esc(stageName(x.c))+(stp ? ' <span class="mono">'+stp.at+'</span>' : '')+'<select class="asg'+(sel?" set":"")+'" data-as="'+esc(key)+'"'+(past?" disabled":"")+'>'
+      h += '<label class="f"><span class="lab"><span>'+esc(stageShort(x.c))+'</span>'+(stp ? '<span class="mono">'+stp.at+'</span>' : '')+'</span><select class="asg'+(sel?" set":"")+'" data-as="'+esc(key)+'"'+(past?" disabled":"")+'>'
         +'<option value="">'+T("Chưa chọn")+'</option>'+opts(sel)
         +(sel && !ws.some(([id]) => id===sel) ? '<option value="'+esc(sel)+'" selected>'+esc(as.workerName||sel)+'</option>' : '')+'</select></label>'; });
     h += '</div></div>'; });
