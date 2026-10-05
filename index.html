@@ -188,12 +188,13 @@ tr.sun td{color:var(--muted)}
 .dayh{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .offt{display:flex;gap:6px;align-items:center;font-size:14px;font-weight:600;padding:4px 10px;border:1.5px solid var(--line);border-radius:999px;cursor:pointer}
 .offt input{width:18px;height:18px;font-size:16px}
-.dayg{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;align-items:end}
+.dayg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end}
 .dayg .f{min-width:0}
 .lab{display:flex;gap:6px;justify-content:space-between;align-items:baseline;min-width:0}
 .lab span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .lab .mono{flex:none;font-weight:400;font-size:12px}
-select.asg{padding-inline:8px;text-overflow:ellipsis}
+select.asg{padding-inline:8px;text-overflow:ellipsis;height:44px;padding-block:0}
+@media (min-width:640px){ .dayg{grid-template-columns:repeat(3,minmax(0,1fr))} }
 select.asg{color:var(--muted)}
 select.asg.set{color:var(--ink);border-color:var(--accent);background:var(--accent-soft);font-weight:600}
 .orig{display:block;font-size:12.5px;color:var(--muted)}
@@ -419,7 +420,7 @@ const JA = {
 "Các bước đầu ca phải xong trước khi lưu":"保存の前に始業の作業が完了している必要があります","Chưa xong bước đầu ca: {l}. Chờ người phụ trách làm xong rồi lưu.":"始業の作業が未完了です：{l}。担当者の完了後に保存してください。",
 "Ghi chú mẫu:":"サンプル備考：","Mỗi công đoạn chọn một người phụ trách. Công nhân chỉ thấy đúng công đoạn có tên mình; ô chưa chọn thì không ai thấy.":"工程ごとに担当者を１人選びます。作業者には自分の名前がある工程だけが表示されます。未割当の欄は誰にも表示されません。",
 "Điền nhanh cho máy đang chọn":"選択中の機械に一括入力","Công đoạn":"工程","Tất cả công đoạn":"すべての工程","Điền cả tuần":"週全体に入力",
-"Chưa chọn":"未選択",
+"Chọn":"選択",
 "Chọn người cho từng công đoạn. Ô chưa chọn thì chưa có ai phụ trách.":"工程ごとに担当者を選びます。未選択の欄は担当者なしです。",
 "Tháng báo cáo":"対象月","Tải lại":"再読み込み","Xuất Excel":"Excel出力",
 "Trình xem này không cho tải file. Hãy mở trang trên trình duyệt máy tính để xuất Excel.":"この画面ではファイルを保存できません。パソコンのブラウザで開いてExcel出力してください。",
@@ -999,7 +1000,7 @@ function renderAssign(){
   if(!ws.length){ box.innerHTML = h+'<div class="notice">'+T("Chưa có tài khoản công nhân nào. Tạo ở tab Tài khoản trước.")+'</div></div>'; return; }
   const opts = sel => ws.map(([id,a]) => '<option value="'+esc(id)+'"'+(id===sel?" selected":"")+'>'+esc(a.name)+'</option>').join("");
   if(ms.length>1) h += '<div class="seg" id="asgMachines">'+ms.map(m => '<button type="button" data-am="'+esc(m.id)+'" aria-pressed="'+(m.id===mid)+'">'+esc(mName(m.name))+'</button>').join("")+'</div>';
-  h += '<div class="card"><b>'+T("Điền nhanh cho máy đang chọn")+'</b><div class="row"><select id="qfWorker" class="grow" aria-label="'+T("Chọn công nhân")+'"><option value="">— '+T("Chọn công nhân")+' —</option>'+opts(S.qfWorker)+'</select>'
+  h += '<div class="card"><b>'+T("Điền nhanh cho máy đang chọn")+'</b><div class="row"><select id="qfWorker" class="grow" aria-label="'+T("Chọn công nhân")+'"><option value=""'+(S.qfWorker?"":" selected")+'>'+T("Chọn công nhân")+'</option>'+opts(S.qfWorker)+'</select>'
     +'<select id="qfStage" class="grow" aria-label="'+T("Công đoạn")+'"><option value="">'+T("Tất cả công đoạn")+'</option>'+STAGES.map(x => '<option value="'+x.c+'"'+(x.c===S.qfStage?" selected":"")+'>'+esc(stageShort(x.c))+'</option>').join("")+'</select></div>'
     +'<div class="row"><button class="btn sm" data-qf="fill">'+T("Điền cả tuần")+'</button><button class="btn sm warn" data-qf="clear">'+T("Xoá phân công tuần này")+'</button></div></div>';
   h += '<div class="list">';
@@ -1009,7 +1010,7 @@ function renderAssign(){
     if(off) h += '<div class="notice" style="grid-column:1/-1">'+T("Ngày nghỉ – không cần kiểm máy.")+'</div>';
     else STAGES.forEach(x => { const key = date+"_"+x.c+"_"+mid, as = S.assign.get(key), sel = as ? as.workerId : "", stp = x.step ? STEPS.find(y => y.k===x.step) : null;
       h += '<label class="f"><span class="lab"><span>'+esc(stageShort(x.c))+'</span>'+(stp ? '<span class="mono">'+stp.at+'</span>' : '')+'</span><select class="asg'+(sel?" set":"")+'" data-as="'+esc(key)+'"'+(past?" disabled":"")+'>'
-        +'<option value="">'+T("Chưa chọn")+'</option>'+opts(sel)
+        +'<option value=""'+(sel?"":" selected")+'>'+T("Chọn")+'</option>'+opts(sel)
         +(sel && !ws.some(([id]) => id===sel) ? '<option value="'+esc(sel)+'" selected>'+esc(as.workerName||sel)+'</option>' : '')+'</select></label>'; });
     h += '</div></div>'; });
   box.innerHTML = h+'</div></div>';
