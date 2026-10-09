@@ -408,7 +408,7 @@ select.asg.set{color:var(--ink);border-color:var(--accent);background:var(--acce
   <section id="tab-times" hidden></section>
 </main>
 <div id="toast" hidden></div>
-<div class="ver">Phiên bản 09/10/2026 13:45</div>
+<div class="ver">Phiên bản 09/10/2026 13:50</div>
 
 <script>
 (function(){
@@ -1651,7 +1651,7 @@ function accForm(id){
 }
 function renderAccounts(){
   const box = $("#tab-accounts"), admin = isMgr(), order = {admin:0, manager:1, leader:2, device:3, worker:4};
-  const list = [...S.accounts.entries()].filter(([,a]) => admin || a.role==="worker").sort((x,y) => order[x[1].role]-order[y[1].role] || x[1].name.localeCompare(y[1].name));
+  const list = [...S.accounts.entries()].filter(([,a]) => (admin || a.role==="worker") && (a.role!=="admin" || S.me.role==="admin")).sort((x,y) => order[x[1].role]-order[y[1].role] || x[1].name.localeCompare(y[1].name));
   let h = '<div class="panel"><div class="row between"><h2>'+T("Quản lý tài khoản")+'</h2>'+(S.editAcc ? '' : '<button class="btn pri sm" data-acc="new">'+T("Tạo tài khoản")+'</button>')+'</div>'
     +'<div class="sub">'+T(admin ? "Admin tạo tài khoản tổ trưởng, tài khoản iPad cho từng máy và danh sách công nhân. Công nhân không đăng nhập: chọn tên và nhập mã PIN trên iPad." : "Bạn thêm công nhân và đặt mã PIN 4 số. Công nhân chọn tên và nhập PIN trên iPad của máy.")+'</div>';
   if(S.editAcc==="__new") h += accForm("__new");
@@ -1693,10 +1693,11 @@ $("#tab-accounts").addEventListener("click", async e => {
   const b = e.target.closest("button[data-acc]"); if(!b || S.busy) return;
   const act = b.dataset.acc;
   if(act==="new"){ S.editAcc = "__new"; return renderAccounts(); }
-  if(act==="edit"){ S.editAcc = b.dataset.id; return renderAccounts(); }
+  if(act==="edit"){ const t = S.accounts.get(b.dataset.id); if(t && t.role==="admin" && S.me.role!=="admin") return; S.editAcc = b.dataset.id; return renderAccounts(); }
   if(act==="cancel"){ S.editAcc = null; return renderAccounts(); }
   if(act==="save") return saveAcc();
-  if(act==="del"){ if(b.dataset.sure!=="1"){ b.dataset.sure="1"; b.textContent=T("Bấm lần nữa để xoá"); return; }
+  if(act==="del"){ const t = S.accounts.get(b.dataset.id); if(t && t.role==="admin" && S.me.role!=="admin") return;
+    if(b.dataset.sure!=="1"){ b.dataset.sure="1"; b.textContent=T("Bấm lần nữa để xoá"); return; }
     S.busy = true; try{ await S.db.doc("accounts/"+b.dataset.id).delete(); toast(T("Đã xoá tài khoản.")); }catch(err){ toast(T("Chưa xoá được.")); } S.busy = false; }
 });
 
