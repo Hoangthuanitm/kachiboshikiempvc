@@ -408,7 +408,7 @@ select.asg.set{color:var(--ink);border-color:var(--accent);background:var(--acce
   <section id="tab-times" hidden></section>
 </main>
 <div id="toast" hidden></div>
-<div class="ver">Phiên bản 09/10/2026 11:50</div>
+<div class="ver">Phiên bản 09/10/2026 12:05</div>
 
 <script>
 (function(){
@@ -1970,6 +1970,7 @@ function sheetPanel(){ const sp = S.sheetUi || {};
   return '<div class="panel"><h2>'+T("Kết nối Google Sheet")+'</h2><div class="sub">'+T("Dán link Web App của Google Sheet (cài theo file hướng dẫn). Từ đó mỗi phiếu kiểm, kết quả duyệt và báo cáo sản xuất được ghi thêm một bản sang Sheet. Dữ liệu chính vẫn ở Firestore.")+'</div>'
     +'<label class="f" for="sheetUrl">'+T("Link Web App")+'<input type="text" id="sheetUrl" value="'+esc(S.sheetUrl||"")+'" placeholder="https://script.google.com/macros/s/…/exec" autocapitalize="none"></label>'
     +'<div class="row"><button class="btn pri sm" id="sheetSave">'+T("Lưu link")+'</button>'+(S.sheetUrl ? '<button class="btn sm" id="sheetTest">'+T("Gửi thử")+'</button><button class="btn sm" id="sheetMonth">'+T("Gửi lại dữ liệu tháng {m}",{m:ymText(S.today.slice(0,7))})+'</button><button class="btn sm" id="sheetPrev">'+T("Gửi lại tháng {m}",{m:ymText(prevMonth(S.today.slice(0,7)))})+'</button>' : '')+'</div>'
+    +(sp.msg ? '<div class="'+(sp.ok ? "notice" : "alert")+'">'+esc(sp.msg)+'</div>' : '')
     +'<div class="sub">'+(S.sheetUrl ? T("Đang kết nối. Bản ghi chưa gửi được trên máy này: {n}.",{n:sheetQueue().length}) : T("Chưa kết nối Google Sheet."))+'</div></div>'; }
 async function sheetMonthSend(ym){
   if(S.busy) return; S.busy = true; toast(T("Đang gửi dữ liệu tháng {m}…",{m:ymText(ym)}));
@@ -1985,6 +1986,20 @@ async function sheetMonthSend(ym){
 const SHEET_TOKEN = "kachiboshi-pvc";
 /* Link Web App mặc định của Kachiboshi VN; Admin đổi hoặc ngắt ở Cài đặt → Kết nối Google Sheet */
 const DEFAULT_SHEET_URL = "https://script.google.com/macros/s/AKfycbyuvc2OY-SgrzFmPJAE-5sexwRxGHy-_2-689Zkshokd2HDDcIqK4R0FnWhufFv9SUcQw/exec";
+if(!S.sheetUrlSet) S.sheetUrl = DEFAULT_SHEET_URL;   /* dùng link mặc định ngay từ đầu, kể cả khi chưa đọc được cài đặt từ Firestore */
+/* Gửi thử có đọc phản hồi của Google để biết chính xác lỗi nằm ở đâu */
+async function sheetProbe(){ const body = JSON.stringify({token:SHEET_TOKEN, items:[{sheet:"Kiểm tra kết nối", key:"test", row:{"Thời gian":vnDT(new Date().toISOString()), "Người gửi":S.me.name, "Nội dung":"Kết nối từ app PVC hoạt động"}}]});
+  let t = "";
+  try{ const r = await fetch(S.sheetUrl, {method:"POST", body:body}); t = await r.text(); }
+  catch(e){ await sheetPost(JSON.parse(body).items).catch(() => {}); return {ok:false, msg:T("Không đọc được phản hồi từ Google. Thường do Web App chưa để “Ai có quyền truy cập: Bất kỳ ai” hoặc link sai. App vẫn gửi thử một lần: mở Sheet xem có tab “Kiểm tra kết nối” không.")}; }
+  let j = null; try{ j = JSON.parse(t); }catch(e){}
+  if(j && j.ok) return {ok:true, msg:T("Kết nối tốt. Sheet đã ghi dòng thử ở tab “Kiểm tra kết nối”.")};
+  if(j && j.error==="token") return {ok:false, msg:T("Sheet từ chối vì sai mã: TOKEN trong Apps Script phải là “kachiboshi-pvc”.")};
+  if(j && j.error) return {ok:false, msg:T("Apps Script báo lỗi: {e}",{e:j.error})};
+  if(/doPost/i.test(t)) return {ok:false, msg:T("Bản đã triển khai chưa có hàm doPost. Vào Triển khai → Quản lý triển khai → ✎ → Phiên bản: Phiên bản mới → Triển khai.")};
+  if(/accounts\.google|ServiceLogin|signin/i.test(t)) return {ok:false, msg:T("Web App đang bắt đăng nhập. Sửa triển khai: “Thực thi với tư cách: Tôi”, “Ai có quyền truy cập: Bất kỳ ai”.")};
+  if(/null|getSheetByName|insertSheet/i.test(t)) return {ok:false, msg:T("Apps Script không gắn với file Google Sheet. Hãy mở file Sheet → Tiện ích mở rộng → Apps Script, dán mã vào đó rồi triển khai lại (hoặc điền SHEET_ID trong mã).")};
+  return {ok:false, msg:T("Phản hồi lạ từ Google: {t}",{t:t.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim().slice(0,160)})}; }
 const SHEET_Q = "pvc_sheetq";
 const vnDT = iso => iso ? (() => { const d = new Date(iso); return pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+d.getFullYear()+" "+pad(d.getHours())+":"+pad(d.getMinutes()); })() : "";
 const vnD = s => s ? s.slice(8,10)+"/"+s.slice(5,7)+"/"+s.slice(0,4) : "";
@@ -2053,7 +2068,8 @@ $("#tab-settings").addEventListener("click", async e => {
   if(e.target.id==="purgeScan") return purgeScan();
   if(e.target.id==="sheetSave"){ const u = $("#sheetUrl").value.trim(); if(u && !/^https:\/\/script\.google\.com\/.+\/exec$/.test(u)) return toast(T("Link phải có dạng https://script.google.com/…/exec"));
     try{ await S.db.doc("config/sheet").set({url:u, at:new Date().toISOString(), by:S.me.name}); toast(T(u ? "Đã lưu link Google Sheet." : "Đã ngắt kết nối Google Sheet.")); }catch(err){ toast(T("Chưa lưu được cài đặt.")); } return; }
-  if(e.target.id==="sheetTest"){ await sheetSend([{sheet:"Kiểm tra kết nối", key:"test", row:{"Thời gian":vnDT(new Date().toISOString()), "Người gửi":S.me.name, "Nội dung":"Kết nối từ app PVC hoạt động"}}]); return toast(T("Đã gửi thử. Mở Google Sheet xem tab “Kiểm tra kết nối”.")); }
+  if(e.target.id==="sheetTest"){ e.target.disabled = true; S.sheetUi = Object.assign(S.sheetUi || {}, {msg:T("Đang gửi thử…"), ok:null}); renderSettings();
+    const r = await sheetProbe(); S.sheetUi.msg = r.msg; S.sheetUi.ok = r.ok; if(r.ok) sheetFlush(); return renderSettings(); }
   if(e.target.id==="sheetMonth") return sheetMonthSend(S.today.slice(0,7));
   if(e.target.id==="sheetPrev") return sheetMonthSend(prevMonth(S.today.slice(0,7)));
   if(e.target.id==="purgeRun") return purgeRun();
@@ -2097,7 +2113,7 @@ async function start(){
   const db = S.db;
   const fail = e => { if(e && e.code==="permission-denied"){ S.dbErr = "Firestore từ chối truy cập. Hãy mở quyền đọc/ghi cho collection này trong Security Rules rồi tải lại trang."; S.me = null; render(); } else toast(T("Mất kết nối dữ liệu. Tải lại trang.")); };
   db.collection("accounts").onSnapshot(q => { S.accounts = new Map(q.docs.map(d => [d.id, d.data()])); S.accLoaded = true; syncSession(); render(); if(S.me && S.tab==="report" && !S.report.loaded) loadReport(); }, fail);
-  db.doc("config/sheet").onSnapshot(s => { const d = s.exists ? s.data() : {}; S.sheetUrl = d.url!==undefined ? d.url : DEFAULT_SHEET_URL; S.sheetAt = d.at || ""; sheetFlush(); if(S.tab==="settings" && !typingIn("#tab-settings")) renderSettings(); }, () => {});
+  db.doc("config/sheet").onSnapshot(s => { const d = s.exists ? s.data() : {}; S.sheetUrl = d.url!==undefined ? d.url : DEFAULT_SHEET_URL; S.sheetUrlSet = true; S.sheetAt = d.at || ""; sheetFlush(); if(S.tab==="settings" && !typingIn("#tab-settings")) renderSettings(); }, () => {});
   db.doc("config/main").onSnapshot(s => { const d = s.exists ? s.data() : {};
     /* Cấu hình đã lưu từ trước chưa có máy tự động thì thêm vào một lần; admin xoá đi thì không tự thêm lại */
     let saved = Array.isArray(d.machines) && d.machines.length ? d.machines : null;
