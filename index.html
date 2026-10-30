@@ -69,7 +69,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .who .role.op{background:var(--ok-soft);color:var(--ok)}
 .ltable{display:grid;gap:8px}
 .ldefs{display:grid;gap:6px;min-width:0}
-.ldef{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1.2fr) minmax(0,1.3fr) 40px;gap:8px;align-items:center}
+.ldef{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,2.5fr) 40px;gap:8px;align-items:center}
+.chead{font-weight:500;color:var(--wait,#8c5a08)}.chint{display:none;color:var(--wait,#8c5a08);margin-top:3px}.oldnote{margin-top:3px}
 .lhead .ldef{gap:8px}
 .xdef{padding:6px 0;min-height:40px}
 .addef{justify-self:start}
@@ -94,6 +95,7 @@ main.wrap:has(> #tab-daily:not([hidden])){max-width:1240px}
 @container (max-width:900px){
   .lrow.lhead{display:none}
   .ml{display:block}
+  .chint{display:block}
   .lrow{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;row-gap:10px}
   .ldefs{grid-column:1/-1;order:3}
   .lmeta{order:4}
@@ -104,6 +106,7 @@ main.wrap:has(> #tab-daily:not([hidden])){max-width:1240px}
   .ldef{grid-template-columns:minmax(0,1fr) 40px}
 .ldef .lc:nth-child(1),.ldef .lc:nth-child(2){grid-column:1/-1}
   .ldef .lc:nth-child(3){grid-column:1/2}
+  .ldef .xdef{grid-column:2;justify-self:end;width:40px}
 .ldef .xdef{align-self:end;min-height:40px}
   .lc.lp{grid-column:1/-1}
   .lact{grid-column:1/-1;justify-content:flex-start}
@@ -521,7 +524,7 @@ main.wrap:has(> #tab-check:not([hidden]) .dayt){max-width:1240px}
   <section id="tab-incident" hidden></section>
 </main>
 <div id="toast" hidden></div>
-<div class="ver">Phiên bản 30/10/2026 10:00</div>
+<div class="ver">Phiên bản 30/10/2026 10:10</div>
 
 <script>
 (function(){
@@ -627,7 +630,7 @@ const JA = {
 "Mật khẩu xoá dữ liệu":"削除用パスワード","Sẽ xoá {n} bản ghi: {d}.":"{n}件を削除します：{d}。","Xác nhận xoá":"削除を確定","Kiểm tra dữ liệu sẽ xoá":"削除対象を確認","Sai mật khẩu xoá dữ liệu.":"削除用パスワードが違います。","Đang kiểm tra dữ liệu…":"データを確認中…",
 "phiếu kiểm":"点検記録","ảnh (nếu có)":"写真（ある場合）","kết quả duyệt":"承認結果","báo cáo sản xuất":"生産報告","duyệt báo cáo cũ":"旧報告の承認","bước đầu ca":"始業作業","ngày nghỉ":"休日","phân công cũ":"旧担当割当","không có":"なし","Không có dữ liệu nào cần xoá.":"削除対象のデータはありません。",
 "Chưa đọc được dữ liệu. Kiểm tra mạng rồi thử lại.":"データを読み込めません。通信を確認して再試行してください。","Đang xoá… {a}/{b}":"削除中… {a}/{b}","Đã xoá {n} bản ghi, {f} bản ghi chưa xoá được. Thử lại sau.":"{n}件削除、{f}件は削除できませんでした。後で再試行してください。","Đã xoá {n} bản ghi.":"{n}件を削除しました。",
-"Lỗi khác, ghi chú…":"その他の不良・備考…","Lưu":"保存","Có thay đổi chưa lưu":"未保存の変更あり","Đã lưu {t} · {n}":"保存 {t} · {n}","Xoá?":"削除？",
+"Lỗi khác, ghi chú…":"その他の不良・備考…","Lỗi không có trong danh sách: xác nhận với Mỹ.":"リストにない不良はMỹさんに確認してください。","Có hàng loại 2: hãy chọn nguyên nhân. Lỗi không có trong danh sách thì xác nhận với Mỹ.":"B品があります。原因を選んでください。リストにない不良はMỹさんに確認してください。","Ghi chú cũ:":"旧備考：","Lưu":"保存","Có thay đổi chưa lưu":"未保存の変更あり","Đã lưu {t} · {n}":"保存 {t} · {n}","Xoá?":"削除？",
 "Mã PIN:":"PIN：","mặc định":"初期値","Mật khẩu (công nhân: mã PIN 4 số, bỏ trống = 1234)":"パスワード（作業者は4桁PIN、空欄なら1234）","Mã PIN 4 số (bỏ trống = 1234)":"4桁PIN（空欄なら1234）","Đổi mã PIN":"PIN変更","Đổi mã PIN của {n}":"{n} のPIN変更","Mã PIN mới":"新しいPIN","Nhập lại mã PIN mới":"新しいPIN（確認）","Lưu mã PIN":"PINを保存","Hai lần nhập mã PIN không khớp.":"2回入力したPINが一致しません。","Mã PIN mới trùng mã cũ.":"新しいPINが現在のPINと同じです。","Đã đổi mã PIN.":"PINを変更しました。",
 "Báo cáo sản xuất":"生産報告","iPad của máy":"機械用iPad","Công nhân không cần đăng nhập. Hãy chọn tên và nhập mã PIN trên iPad của máy.":"作業者はログイン不要です。機械のiPadで名前を選び、PINを入力してください。",
 "iPad của máy này. Mọi thao tác được ghi theo tên người đang chọn.":"この機械専用のiPadです。操作は選択中の作業者名で記録されます。","iPad chưa gắn với máy nào":"このiPadは機械に紐づいていません","Nhờ Admin mở tab Tài khoản và chọn máy cho tài khoản iPad này.":"管理者がアカウント画面でこのiPadの機械を設定してください。",
@@ -1599,8 +1602,7 @@ function renderDaily(){
     const sv = l.saved ? dLines(dsaved).find(x => x.id===l.id) : null, st = !l.saved ? "new" : l.dirty ? "dirty" : "saved";
     const defRow = (x, j) => { const clist = S.defects.concat(x.cause && !S.defects.includes(x.cause) ? [x.cause] : []);
       return '<div class="ldef"><div class="lc">'+ml("Số lượng loại 2")+'<div class="lq">'+qd(i,j,"bta","tá")+qd(i,j,"bdoi","đôi")+'</div></div>'
-        +'<div class="lc">'+ml("Nguyên nhân")+'<select data-l="'+i+'" data-di="'+j+'" data-f="cause" aria-label="'+T("Nguyên nhân")+'"><option value="">—</option>'+clist.map(c => '<option value="'+esc(c)+'"'+(c===x.cause?" selected":"")+'>'+esc(nm(c))+'</option>').join("")+'</select></div>'
-        +'<div class="lc">'+ml("Ghi chú")+'<input type="text" data-l="'+i+'" data-di="'+j+'" data-f="note" value="'+esc(x.note)+'" placeholder="'+T("Lỗi khác, ghi chú…")+'" aria-label="'+T("Ghi chú")+'"></div>'
+        +'<div class="lc">'+ml("Nguyên nhân")+'<select data-l="'+i+'" data-di="'+j+'" data-f="cause" aria-label="'+T("Nguyên nhân")+'"><option value="">—</option>'+clist.map(c => '<option value="'+esc(c)+'"'+(c===x.cause?" selected":"")+'>'+esc(nm(c))+'</option>').join("")+'</select>'+(x.note ? '<div class="sub oldnote">'+T("Ghi chú cũ:")+' '+esc(x.note)+'</div>' : '')+'<div class="sub chint">'+T("Lỗi không có trong danh sách: xác nhận với Mỹ.")+'</div></div>'
         +'<button type="button" class="btn sm xdef" data-ddel="'+i+':'+j+'" aria-label="'+T("Xoá dòng loại 2")+'" title="'+T("Xoá dòng loại 2")+'"'+(l.defs.length<2 ? " disabled" : "")+'>✕</button></div>'; };
     return '<div class="lrow '+st+'" data-row="'+i+'">'
       +'<div class="lc lp">'+ml("Tên sản phẩm")+(S.products.length ? '<select data-l="'+i+'" data-f="product" aria-label="'+T("Tên sản phẩm")+'"><option value="">'+T("Chọn sản phẩm")+'</option>'+plist.map(x => '<option value="'+esc(x)+'"'+(x===l.product?" selected":"")+'>'+esc(nm(x))+'</option>').join("")+'</select>' : '<input type="text" data-l="'+i+'" data-f="product" value="'+esc(l.product)+'" placeholder="'+T("Tên sản phẩm")+'">')+'</div>'
@@ -1612,7 +1614,7 @@ function renderDaily(){
   box.innerHTML = bh+'<div class="panel"><div><h2>'+dowOf(dDate())+', <span class="mono">'+fmtDate(dDate())+'</span></h2><div class="sub">'+T(isBS() ? "Quản đốc nhập bổ sung thay cho tổ trưởng {n}." : "Tổ trưởng nhập theo từng mã hàng và cập nhật trong ngày. Chốt số trước 20:00. Chỉ sửa được trong hôm nay.",{n:(dRep()||{}).name||""})+'</div></div><div class="row">'+status+'</div>'
     +(ms.length<2 ? '' : '<div class="slots">'+ms.map(m => { const ls = dLines(S.daily.get(dDate()+"_"+m.id)); return '<button class="slot" data-dm="'+esc(m.id)+'" aria-pressed="'+(m.id===S.dmachine)+'"><b>'+esc(mName(m.name))+'</b><span>'+(ls.length ? T("{n} sản phẩm",{n:ls.length})+' · '+T({approved:"Đã duyệt", leadok:"Chờ quản đốc", returned:"Bị trả lại", draft:"Chưa xác nhận"}[dState(S.daily.get(dDate()+"_"+m.id), S.dapprs.get(dDate()+"_"+m.id))]) : T("Chưa có số liệu"))+'</span></button>'; }).join("")+'</div>')+'</div>'
     +'<div class="panel" id="dailyBox"><div><h2>'+esc(mName(mc.name||""))+'</h2>'+(sl.length ? '<div class="sub">'+T("Tổng sản lượng:")+' <b>'+qtyText(tq)+'</b> · '+T("Loại 2:")+' <b>'+qtyText(tb)+'</b> · '+T("Tỷ lệ loại 2:")+' <b>'+rateText(tq,tb)+'</b>'+(dsaved && dsaved.supplement ? ' · <span class="chip plain">'+T("Quản đốc nhập bổ sung")+'</span>' : dsaved && dTiming(dsaved).timing==="late" ? ' · <span class="chip ng">'+T("Cập nhật sau 20:00")+'</span>' : '')+'</div>' : '')+'</div>'
-    +'<div class="ltable"><div class="lrow lhead"><div>'+T("Tên sản phẩm")+'</div><div>'+T("Sản lượng thực tế")+'</div><div class="ldef"><div>'+T("Số lượng loại 2")+'</div><div>'+T("Nguyên nhân")+'</div><div>'+T("Ghi chú")+'</div><div></div></div><div></div></div>'+df.lines.map(lineHtml).join("")+'</div>'
+    +'<div class="ltable"><div class="lrow lhead"><div>'+T("Tên sản phẩm")+'</div><div>'+T("Sản lượng thực tế")+'</div><div class="ldef"><div>'+T("Số lượng loại 2")+'</div><div>'+T("Nguyên nhân")+' <span class="chead">· '+T("Lỗi không có trong danh sách: xác nhận với Mỹ.")+'</span></div><div></div></div><div></div></div>'+df.lines.map(lineHtml).join("")+'</div>'
     +'<div class="row"><button class="btn" data-ladd="1">+ '+T("Thêm sản phẩm")+'</button></div>'+(dsaved ? histHtml(dsaved) : '')
     +(sl.length ? (() => { const ap = S.dapprs.get(df.key) || {}, st = dState(dsaved, ap);
         return '<div class="confbar">'+(st==="returned" && ap.retNote ? '<div class="notice">'+T("Quản đốc trả lại:")+' '+txt(ap.retNote)+'</div>' : '')
@@ -1635,7 +1637,7 @@ async function saveLine(i, btn){
   if(v.concat(defs.flatMap(x => x.raw)).some(x => x===null || x<0 || x!==Math.floor(x))) return toast(T("Số lượng phải là số nguyên."));
   const qty = v[0]*12+v[1], b2 = defs.reduce((a,x) => a+x.b2, 0);
   if(qty<=0 && b2<=0) return toast(T("Hãy nhập sản lượng thực tế."));
-  if(defs.some(x => x.b2>0 && !x.cause && !x.note)) return toast(T("Có hàng loại 2: hãy chọn nguyên nhân hoặc ghi chú."));
+  if(defs.some(x => x.b2>0 && !x.cause && !x.note)) return toast(T("Có hàng loại 2: hãy chọn nguyên nhân. Lỗi không có trong danh sách thì xác nhận với Mỹ."));
   if(defs.some(x => !x.b2 && (x.cause || x.note))) return toast(T("Hãy nhập số lượng loại 2 cho từng nguyên nhân."));
   const dlist = defs.filter(x => x.b2>0).map(x => ({b2:x.b2, cause:x.cause, note:x.note})), note = [...new Set(dlist.map(x => x.note).filter(Boolean))].join("; ");
   const old = S.daily.get(df.key), lines = dLines(old).map(x => Object.assign({}, x)), at = new Date().toISOString();
